@@ -2,9 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
-from sqlalchemy import text, inspect
+from datetime import datetime, timezone
 import os
+import pytz
 
 
 app = Flask(__name__)
@@ -13,6 +13,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:/
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+def to_local_time(dt):
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        # Assume naive datetime is UTC
+        dt = dt.replace(tzinfo=timezone.utc)
+    local_tz = datetime.now().astimezone().tzinfo
+    return dt.astimezone(local_tz)
 
 # Run database migrations on startup
 # with app.app_context():
@@ -67,7 +76,7 @@ class Reservation(db.Model):
     block = db.Column(db.String(50), nullable=True)
     row = db.Column(db.String(50), nullable=True)
     status = db.Column(db.String(50), nullable=False, default='pending')
-    reserved_at = db.Column(db.DateTime, default=datetime.utcnow)
+    reserved_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     price = db.Column(db.Float, nullable=True)
     plot = db.relationship('Plot', backref='reservations')
 
@@ -79,7 +88,7 @@ class Notification(db.Model):
     message = db.Column(db.String(500), nullable=False)
     status = db.Column(db.String(50), nullable=True)  # e.g. pending/confirmed/failed
     read = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 # Deceased model
@@ -93,7 +102,7 @@ class Deceased(db.Model):
     age = db.Column(db.Integer, nullable=True)
     square_meter = db.Column(db.String(50), nullable=True)
     plot_id = db.Column(db.Integer, db.ForeignKey('plot.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     plot = db.relationship('Plot', backref='deceased')
 
 # Create tables if not exist
@@ -378,7 +387,7 @@ def api_admin_reservations():
             'plot_number': plot.number if plot else '',
             'status': r.status,
             'price': r.price,
-            'reserved_at': r.reserved_at.isoformat()
+            'reserved_at': to_local_time(r.reserved_at).isoformat()
         })
     return jsonify({'success': True, 'reservations': out})
 
@@ -400,7 +409,7 @@ def api_my_reservations():
             'plot_number': plot.number if plot else '',
             'status': r.status,
             'price': r.price,
-            'reserved_at': r.reserved_at.isoformat()
+            'reserved_at': to_local_time(r.reserved_at).isoformat()
         })
     return jsonify({'success': True, 'reservations': out})
 
@@ -677,7 +686,7 @@ def api_notifications():
         notes = Notification.query.filter_by(user_id=user_id).order_by(Notification.created_at.desc()).limit(50).all()
         out = []
         for n in notes:
-            out.append({'id': n.id, 'message': n.message, 'status': n.status or 'pending', 'time': n.created_at.isoformat()})
+            out.append({'id': n.id, 'message': n.message, 'status': n.status or 'pending', 'time': to_local_time(n.created_at).isoformat()})
         return jsonify({'success': True, 'notifications': out})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -909,7 +918,7 @@ def admin_deceased():
                 'block': plot.block if plot else '',
                 'row': plot.row if plot else '',
                 'square_meter': plot.square_meter if plot else '',
-                'created_at': d.created_at.isoformat()
+                'created_at': to_local_time(d.created_at).isoformat()
             })
     except Exception:
         deceased_list = []

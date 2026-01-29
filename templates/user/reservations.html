@@ -9,11 +9,11 @@
         body {
             background: url("{{ url_for('static', filename='images/Picture1.jpg') }}") no-repeat center center fixed;
             background-size: cover;
-            color: #23232a;
+            color: #ffffff;
             font-family: Arial, sans-serif;
         }
         header {
-            background: #fff;
+            background: #1a1a1a;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
         .container {
@@ -39,7 +39,7 @@
         .list-box {
             width: 100%;
             height: 100%;
-            background-color: #fff;
+            background-color: #2d2d2d;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             padding: 2rem 1.5rem;
@@ -51,23 +51,23 @@
         }
         .side-nav a {
             padding: 0.75rem 1.5rem;
-            color: #23232a;
+            color: #ffffff;
             text-decoration: none;
             border-radius: 5px;
             transition: background 0.2s, color 0.2s;
-            border: 1px solid #000000;
+            border: 1px solid #ffffff;
             margin-bottom: 1rem;
             background: transparent;
         }
         .side-nav a:hover {
-            background: #f0fdf4;
-            color: #000000;
+            background: #404040;
+            color: #ffffff;
         }
         .side-nav a.active {
-            background: #000000;
-            color: #fff;
+            background: #ffffff;
+            color: #000000;
             font-weight: bold;
-            border: 1px solid #000000;
+            border: 1px solid #ffffff;
         }
         .recent-reservations-wrapper {
             width: 100%;
@@ -77,7 +77,7 @@
         .recent-reservations {
             width: 100%;
             border-collapse: collapse;
-            background: #fff;
+            background: #2d2d2d;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -87,14 +87,14 @@
             text-align: left;
         }
         .recent-reservations th {
-            background: #f0fdf4;
-            color: #000000;
+            background: #404040;
+            color: #ffffff;
             font-weight: bold;
-            border-bottom: 2px solid #000000;
+            border-bottom: 2px solid #ffffff;
         }
         .recent-reservations td {
-            color: #23232a;
-            border-bottom: 1px solid #e5e7eb;
+            color: #ffffff;
+            border-bottom: 1px solid #555555;
         }
         .recent-reservations tr:last-child td { border-bottom: none; }
         .status {
@@ -104,7 +104,7 @@
             font-weight: bold;
             display: inline-block;
         }
-        .status.confirmed { background: #000000; color: #fff; }
+        .status.confirmed { background: #ffffff; color: #000000; }
         .status.pending { background: #fde68a; color: #b45309; }
         .action-btn {
             padding: 0.4em 1em;
@@ -135,7 +135,7 @@
         }
         .modal.active { display: flex; }
         .modal-content {
-            background: #fff;
+            background: #2d2d2d;
             padding: 2.5rem 2.5rem 2rem 2.5rem;
             border-radius: 18px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.10);
@@ -149,8 +149,8 @@
             0% { transform: scale(0.85); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        .modal-content h3 { color: #000000; margin-bottom: 0.5rem; font-size: 1.5rem; font-weight: bold; }
-        .modal-content p { color: #23232a; margin-bottom: 2rem; font-size: 1.1rem; }
+        .modal-content h3 { color: #ffffff; margin-bottom: 0.5rem; font-size: 1.5rem; font-weight: bold; }
+        .modal-content p { color: #ffffff; margin-bottom: 2rem; font-size: 1.1rem; }
         .modal-actions {
             display: flex;
             justify-content: center;
@@ -185,29 +185,29 @@
         }
         .btn-close {
             background: transparent;
-            color: #6b7280;
-            border: 1px solid #d1d5db;
+            color: #cccccc;
+            border: 1px solid #555555;
             margin-top: 0.5rem;
             font-size: 0.98rem;
         }
         .btn-close:hover {
-            background: #f3f4f6;
-            color: #000000;
-            border-color: #000000;
+            background: #404040;
+            color: #ffffff;
+            border-color: #ffffff;
         }
         .modal-close-x {
             position: absolute;
             top: 1rem;
             right: 1.2rem;
             font-size: 1.5rem;
-            color: #6b7280;
+            color: #cccccc;
             background: none;
             border: none;
             cursor: pointer;
             transition: color 0.2s;
             z-index: 10;
         }
-        .modal-close-x:hover { color: #000000; }
+        .modal-close-x:hover { color: #ffffff; }
         @media (max-width: 500px) {
             .modal-content {
                 padding: 1.2rem 0.5rem 1rem 0.5rem;
@@ -250,12 +250,12 @@
         <div class="list-box">
             <div style="width:100%;padding:2rem;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
-                    <h2 style="color:#000000;margin:0;">My Reservations</h2>
+                    <h2 style="color:#ffffff;margin:0;">My Reservations</h2>
                     <input 
                         type="text" 
                         id="reservationSearch" 
                         placeholder="Search my reservations..." 
-                        style="padding: 0.5em 1em; border-radius: 6px; border: 1px solid #000000; background: #fff; color: #23232a; font-size: 1rem; outline: none; min-width: 220px;"
+                        style="padding: 0.5em 1em; border-radius: 6px; border: 1px solid #555555; background: #404040; color: #ffffff; font-size: 1rem; outline: none; min-width: 220px;"
                         oninput="filterReservations()"
                     />
                 </div>
@@ -277,8 +277,8 @@
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top:2rem;text-align:center;color:#6b7280;font-size:0.98rem;">
-                    For questions about your reservations, please <a href="#" id="contactSupport" style="color:#000000; text-decoration:underline;">contact support</a>.
+                <div style="margin-top:2rem;text-align:center;color:#cccccc;font-size:0.98rem;">
+                    For questions about your reservations, please <a href="#" id="contactSupport" style="color:#ffffff; text-decoration:underline;">contact support</a>.
                 </div>
             </div>
             <!-- Modal -->

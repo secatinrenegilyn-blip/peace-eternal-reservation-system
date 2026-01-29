@@ -13,12 +13,12 @@
 
         body {
             background: url("{{ url_for('static', filename='images/Picture1.jpg') }}") no-repeat center center fixed;
-            color: #23232a;
+            color: #ffffff;
             margin: 0;
             font-family: Arial, sans-serif;
         }
         header {
-            background: #ffffff;
+            background: #1a1a1a;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
         .container {
@@ -56,7 +56,7 @@
         .list-box {
             width: 100%;
             height: 100%;
-            background-color: #ffffff;
+            background-color: #2d2d2d;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             padding: 2rem 1.5rem;
@@ -68,24 +68,24 @@
         }
         .side-nav a {
             padding: 0.75rem 1.5rem;
-            color: #23232a;
+            color: #ffffff;
             text-decoration: none;
             border-radius: 5px;
             transition: background 0.2s, color 0.2s;
-            border: 1px solid #000000;
+            border: 1px solid #ffffff;
             margin-bottom: 1rem;
             background: transparent;
         }
         .side-nav a:hover {
-            background: #f3f4f6;
-            color: #000000;
+            background: #404040;
+            color: #ffffff;
         }
 
         .side-nav a.active {
-            background: #000000;
-            color: #ffffff;
+            background: #ffffff;
+            color: #000000;
             font-weight: bold;
-            border: 1px solid #000000;
+            border: 1px solid #ffffff;
         }
         /* Responsive for smaller screens */
         @media (max-width: 900px) {
@@ -116,30 +116,30 @@
     
     <div class="right">
         <div class="list-box" style="width:100%;height:100%;padding:0;display:flex;align-items:center;justify-content:center;">
-            <form method="POST" style="width:100%;max-width:540px;margin:auto;background:#f9fafb;padding:2rem 1.5rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-                <h2 style="text-align:center;margin-bottom:1.5rem;color:#000000;">My Profile</h2>
+            <form method="POST" style="width:100%;max-width:540px;margin:auto;background:#2d2d2d;padding:2rem 1.5rem;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                <h2 style="text-align:center;margin-bottom:1.5rem;color:#ffffff;">My Profile</h2>
                 <div style="display:flex;gap:1.25rem;flex-wrap:wrap;">
                     <div style="flex:1;min-width:160px;">
-                        <label for="first_name" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#23232a;">First Name</label>
-                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" style="width:100%;padding:0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:1.05rem;" required>
+                        <label for="first_name" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#ffffff;">First Name</label>
+                        <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" style="width:100%;padding:0.85rem;border:1px solid #555555;border-radius:6px;font-size:1.05rem;background:#2d2d2d;color:#ffffff;" required>
                     </div>
                     <div style="flex:1;min-width:140px;">
-                        <label for="middle_name" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#23232a;">Middle Name</label>
-                        <input type="text" id="middle_name" name="middle_name" value="{{ user.middle_name }}" style="width:100%;padding:0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:1.05rem;">
+                        <label for="middle_name" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#ffffff;">Middle Name</label>
+                        <input type="text" id="middle_name" name="middle_name" value="{{ user.middle_name }}" style="width:100%;padding:0.85rem;border:1px solid #555555;border-radius:6px;font-size:1.05rem;background:#2d2d2d;color:#ffffff;">
                     </div>
                     <div style="flex:1;min-width:160px;">
-                        <label for="last_name" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#23232a;">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" style="width:100%;padding:0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:1.05rem;" required>
+                        <label for="last_name" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#ffffff;">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" style="width:100%;padding:0.85rem;border:1px solid #555555;border-radius:6px;font-size:1.05rem;background:#2d2d2d;color:#ffffff;" required>
                     </div>
                 </div>
                 <div style="display:flex;gap:1.25rem;flex-wrap:wrap;margin-top:1.25rem;">
                     <div style="flex:1;min-width:220px;">
-                        <label for="email" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#23232a;">Email</label>
-                        <input type="email" id="email" name="email" value="{{ user.email }}" style="width:100%;padding:0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:1.05rem;">
+                        <label for="email" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#ffffff;">Email</label>
+                        <input type="email" id="email" name="email" value="{{ user.email }}" style="width:100%;padding:0.85rem;border:1px solid #555555;border-radius:6px;font-size:1.05rem;background:#2d2d2d;color:#ffffff;">
                     </div>
                     <div style="flex:1;min-width:180px;">
-                        <label for="phone" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#23232a;">Phone</label>
-                        <input type="tel" id="phone" name="phone" value="{{ user.phone }}" style="width:100%;padding:0.85rem;border:1px solid #cbd5e1;border-radius:6px;font-size:1.05rem;">
+                        <label for="phone" style="display:block;margin-bottom:0.5rem;font-weight:600;color:#ffffff;">Phone</label>
+                        <input type="tel" id="phone" name="phone" value="{{ user.phone }}" style="width:100%;padding:0.85rem;border:1px solid #555555;border-radius:6px;font-size:1.05rem;background:#2d2d2d;color:#ffffff;">
                     </div>
                 </div>
                 <button type="submit" style="width:100%;padding:0.95rem;background:#000000;color:#fff;border:none;border-radius:6px;font-weight:bold;font-size:1.08rem;cursor:pointer;transition:background 0.2s;margin-top:1.5rem;">
