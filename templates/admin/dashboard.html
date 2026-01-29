@@ -304,6 +304,18 @@
         return template.content.firstChild;
     }
 
+    let currentViewType = 'reservations';
+
+    // update table headers based on view type
+    function updateTableHeaders(type) {
+        const thead = document.querySelector('.recent-reservations thead tr');
+        if (type === 'available') {
+            thead.innerHTML = '<th>Block #</th><th>Row</th><th>Plot #</th><th>Status</th>';
+        } else {
+            thead.innerHTML = '<th>Name</th><th>Block #</th><th>Row</th><th>Plot #</th><th>Date Reserved</th><th>Status</th>';
+        }
+    }
+
     // render reservations into the table body
     function renderReservations(rows) {
         const tbody = document.querySelector('.recent-reservations tbody');
@@ -333,20 +345,28 @@
         const tbody = document.querySelector('.recent-reservations tbody');
         tbody.innerHTML = '';
         if (!rows || rows.length === 0) {
+            const colspan = currentViewType === 'available' ? 4 : 6;
             const tr = document.createElement('tr');
-            tr.innerHTML = '<td colspan="6">No plots found</td>';
+            tr.innerHTML = `<td colspan="${colspan}">No plots found</td>`;
             tbody.appendChild(tr);
             return;
         }
         rows.forEach(p => {
             const dateText = p.date_reserved ? new Date(p.date_reserved).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '';
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${escapeHtml(p.name || '')}</td>
-                            <td>${escapeHtml(p.block || '')}</td>
-                            <td>${escapeHtml(p.row || '')}</td>
-                            <td>${escapeHtml(p.number || '')}</td>
-                            <td>${escapeHtml(dateText)}</td>
-                            <td><span class="status ${escapeHtml((p.status||'').toLowerCase())}">${escapeHtml((p.status||'').charAt(0).toUpperCase() + (p.status||'').slice(1))}</span></td>`;
+            if (currentViewType === 'available') {
+                tr.innerHTML = `<td>${escapeHtml(p.block || '')}</td>
+                                <td>${escapeHtml(p.row || '')}</td>
+                                <td>${escapeHtml(p.number || '')}</td>
+                                <td><span class="status ${escapeHtml((p.status||'').toLowerCase())}">${escapeHtml((p.status||'').charAt(0).toUpperCase() + (p.status||'').slice(1))}</span></td>`;
+            } else {
+                tr.innerHTML = `<td>${escapeHtml(p.name || '')}</td>
+                                <td>${escapeHtml(p.block || '')}</td>
+                                <td>${escapeHtml(p.row || '')}</td>
+                                <td>${escapeHtml(p.number || '')}</td>
+                                <td>${escapeHtml(dateText)}</td>
+                                <td><span class="status ${escapeHtml((p.status||'').toLowerCase())}">${escapeHtml((p.status||'').charAt(0).toUpperCase() + (p.status||'').slice(1))}</span></td>`;
+            }
             tbody.appendChild(tr);
         });
     }
@@ -392,6 +412,8 @@
             // highlight the clicked card
             try { if (elem) elem.classList.add('active'); } catch (e) {}
 
+            currentViewType = type;
+            updateTableHeaders(type);
             title.textContent = (type === 'all') ? 'All Plots' : `${capitalize(type)} Plots`;
             const plots = await fetchAllPlots();
             let filtered = plots;
@@ -407,6 +429,8 @@
         }
 
         // fallback: show reservations; no card should be active in this view
+        currentViewType = 'reservations';
+        updateTableHeaders('reservations');
         title.textContent = 'All Reservations';
         const reservations = await fetchAllReservations();
         renderReservations(reservations);
@@ -425,6 +449,8 @@
 
         // initial load: load the full reservations list (not recent) as requested
         (async () => {
+            currentViewType = 'reservations';
+            updateTableHeaders('reservations');
             const reservations = await fetchAllReservations();
             if (reservations && reservations.length) {
                 // show all reservations by default and ensure no card is active
@@ -433,6 +459,8 @@
                 renderReservations(reservations);
             } else {
                 // fallback to showing all plots (no card active)
+                currentViewType = 'all';
+                updateTableHeaders('all');
                 document.getElementById('list-title').textContent = 'All Plots';
                 document.querySelectorAll('.overview-card.active').forEach(c => c.classList.remove('active'));
                 const plots = await fetchAllPlots();
