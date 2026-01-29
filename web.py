@@ -1073,6 +1073,20 @@ def api_plots():
             raw = Plot.query.filter((Plot.status == None) | (Plot.status == '') | (Plot.status != 'occupied')).order_by(Plot.id.asc()).all()
         out = []
         for p in raw:
+            name = ''
+            date_reserved = ''
+            if p.status and p.status.lower() == 'occupied':
+                deceased = Deceased.query.filter_by(plot_id=p.id).first()
+                if deceased:
+                    name = deceased.name
+                    date_reserved = deceased.buried_date.isoformat() if deceased.buried_date else ''
+            elif p.status and p.status.lower() == 'reserved':
+                reservation = Reservation.query.filter_by(plot_id=p.id).first()
+                if reservation:
+                    user = User.query.get(reservation.user_id)
+                    if user:
+                        name = f"{user.first_name} {user.last_name}"
+                    date_reserved = reservation.reserved_at.isoformat() if reservation.reserved_at else ''
             out.append({
                 'id': p.id,
                 'block': p.block,
@@ -1080,7 +1094,9 @@ def api_plots():
                 'number': p.number,
                 'status': p.status,
                 'square_meter': p.square_meter,
-                'price': p.price
+                'price': p.price,
+                'name': name,
+                'date_reserved': date_reserved
             })
         return jsonify({'success': True, 'plots': out})
     except Exception as e:

@@ -339,12 +339,13 @@
             return;
         }
         rows.forEach(p => {
+            const dateText = p.date_reserved ? new Date(p.date_reserved).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '';
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>-</td>
+            tr.innerHTML = `<td>${escapeHtml(p.name || '')}</td>
                             <td>${escapeHtml(p.block || '')}</td>
                             <td>${escapeHtml(p.row || '')}</td>
                             <td>${escapeHtml(p.number || '')}</td>
-                            <td>-</td>
+                            <td>${escapeHtml(dateText)}</td>
                             <td><span class="status ${escapeHtml((p.status||'').toLowerCase())}">${escapeHtml((p.status||'').charAt(0).toUpperCase() + (p.status||'').slice(1))}</span></td>`;
             tbody.appendChild(tr);
         });
