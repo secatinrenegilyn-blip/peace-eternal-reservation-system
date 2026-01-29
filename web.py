@@ -1319,6 +1319,21 @@ def admin_plot_delete(plot_id):
         p = Plot.query.get(plot_id)
         if not p:
             return jsonify({'success': False, 'error': 'Not found'}), 404
+        # remove related records that reference this plot first to avoid FK/NOT NULL errors
+        try:
+            # remove reservations tied to this plot
+            Reservation.query.filter_by(plot_id=plot_id).delete(synchronize_session=False)
+        except Exception:
+            # if delete via query fails for any reason, fallback to deleting via relationship
+            for r in list(p.reservations):
+                db.session.delete(r)
+        try:
+            # remove deceased records tied to this plot
+            Deceased.query.filter_by(plot_id=plot_id).delete(synchronize_session=False)
+        except Exception:
+            for d in list(p.deceased):
+                db.session.delete(d)
+
         db.session.delete(p)
         db.session.commit()
         return jsonify({'success': True})
