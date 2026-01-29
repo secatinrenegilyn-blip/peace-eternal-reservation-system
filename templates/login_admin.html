@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Cemetery Mapping System</title>
+    <style>
+        body {
+            background: url("{{ url_for('static', filename='images/Picture1.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #18181b; /* Dark text */
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6; /* Light fallback bg */
+        }
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            color: #000000;
+        }
+        nav a {
+            color: #374151;
+            text-decoration: none;
+            margin-left: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #000000;
+        }
+        nav a.active {
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .login-section {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-content {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9); /* light semi-transparent */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+        }
+        .login-content h2 {
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: #18181b;
+        }
+        .login-content input {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background: #ffffff;
+            color: #18181b;
+        }
+        .login-content input::placeholder {
+            color: #6b7280;
+        }
+        .login-content button {
+            background: #000000;
+            color: #fff;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .login-content button:hover {
+            background: #000000;
+            color: #fff;
+        }
+        .login-content form {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="container header-flex">
+        <h1 style="color: #000000;">Peace Eternal Garden</h1>
+        <nav>
+            <a class="active" href="login.html">Admin</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Login Section -->
+<section class="login-section">
+    <div class="container login-content">
+        <h2>Admin Account</h2>
+        <form method="POST" action="{{ url_for('admin_login') }}">
+            <input type="text" name="username" placeholder="Username" required />
+            <input type="password" name="password" placeholder="Password" required />
+            <button type="submit">Login</button>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% if category == 'danger' %}
+                            <div style="color: black; margin-top: 10px; font-weight: bold;">{{ message }}</div>
+                        {% elif category == 'success' %}
+                            <div style="color: black; margin-top: 10px; font-weight: bold;">{{ message }}</div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </form>
+    </div>
+</section>
+
+    <!-- Bottom Right Button -->
+    <a href="{{ url_for('login') }}" style="position: fixed; bottom: 32px; right: 32px; z-index: 1000; text-decoration: none;">
+        <button style="background: #000000; color: #fff; padding: 1rem 2rem; border: none; border-radius: 2rem; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: pointer; transition: background 0.2s;">
+            Login as User
+        </button>
+    </a>
+</body>
+</html>

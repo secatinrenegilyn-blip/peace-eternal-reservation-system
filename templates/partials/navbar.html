@@ -1,0 +1,452 @@
+<style>
+	header {
+		background: #fff;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+	}
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 1rem;
+	}
+	.header-flex {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem 0;
+	}
+	h1 {
+		font-size: 2rem;
+		font-weight: bold;
+		margin: 0;
+		margin-left: 0.5rem;
+	}
+	nav {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+		position: relative;
+	}
+	/* Button-like nav links */
+	.nav-links {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+	}
+	.nav-links a {
+		display: inline-block;
+		padding: 0.45rem 0.9rem;
+		background: #f3f4f6; /* light gray */
+		color: #374151;
+		text-decoration: none;
+		border-radius: 8px;
+		border: 1px solid transparent;
+		font-weight: 500;
+		transition: background 0.15s ease, color 0.15s ease, transform 0.06s ease, box-shadow 0.12s ease;
+		margin-left: 0; /* spacing handled by gap */
+	}
+	.nav-links a:hover {
+		background: #e6e7e9;
+		transform: translateY(-1px);
+		box-shadow: 0 6px 14px rgba(17,24,39,0.06);
+	}
+	.nav-links a:active {
+		transform: translateY(0);
+	}
+	.nav-links a.active {
+		background: #000000; /* green */
+		color: #ffffff;
+		border-color: #000000;
+		box-shadow: 0 8px 30px rgba(0,0,0,0.14);
+	}
+
+	/* Hamburger button */
+	.hamburger {
+		display: none;
+		flex-direction: column;
+		justify-content: space-around;
+		width: 30px;
+		height: 30px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		margin-right: 0.5rem;
+	}
+	.hamburger span {
+		width: 100%;
+		height: 3px;
+		background: #374151;
+		transition: 0.3s;
+	}
+	.hamburger.active span:nth-child(1) {
+		transform: rotate(45deg) translate(5px, 5px);
+	}
+	.hamburger.active span:nth-child(2) {
+		opacity: 0;
+	}
+	.hamburger.active span:nth-child(3) {
+		transform: rotate(-45deg) translate(7px, -6px);
+	}
+
+	/* Mobile menu */
+	.mobile-menu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		right: 0;
+		background: #fff;
+		border: 1px solid rgba(15,23,42,0.06);
+		box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+		border-radius: 8px;
+		padding: 1rem;
+		z-index: 1000;
+		min-width: 200px;
+	}
+	.mobile-menu.active {
+		display: block;
+	}
+	.mobile-menu a {
+		display: block;
+		padding: 0.5rem 0;
+		color: #374151;
+		text-decoration: none;
+		border-bottom: 1px solid #f3f4f6;
+	}
+	.mobile-menu a:last-child {
+		border-bottom: none;
+	}
+	.mobile-menu a:hover {
+		color: #000000;
+	}
+
+	/* Responsive tweaks */
+	@media (max-width: 640px) {
+		.header-flex { flex-direction: row; gap: 0; } /* Keep horizontal */
+		nav { gap: 0; }
+		.nav-links { display: none; }
+		.hamburger { display: flex; }
+		h1 { font-size: 1.5rem; }
+	}
+
+/* Notification styles */
+.badge {
+	/* make the badge a fixed, centered circle to avoid width jumps */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	min-width: 20px;
+	height: 20px;
+	padding: 0; /* remove horizontal padding so width stays fixed */
+	line-height: 1; /* use flex centering instead of line-height */
+	border-radius: 999px;
+	background: #000000; /* red */
+	color: #fff;
+	font-size: 0.75rem;
+	font-weight: 600;
+	margin-left: 0.5rem;
+	vertical-align: middle;
+	white-space: nowrap; /* prevent wrapping */
+	overflow: hidden;
+	text-overflow: ellipsis; /* if number is too large, show ellipsis */
+}
+.notification a { position: relative; }
+.notif-box {
+	position: absolute;
+	right: 0;
+	top: calc(100% + 25px);
+	width: 320px;
+	max-width: calc(100vw - 40px);
+	background: #fff;
+	border: 1px solid rgba(15,23,42,0.06);
+	box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+	border-radius: 8px;
+	padding: 0.5rem;
+	z-index: 1200;
+	display: none;
+}
+.notif-box[aria-hidden="false"] { display: block; }
+.notif-header { font-weight:700; padding: 0.25rem 0.5rem; border-bottom: 1px solid rgba(15,23,42,0.03); }
+.notif-list { max-height: 260px; overflow: auto; padding: 0.5rem 0; }
+.notif-item { padding: 0.5rem; border-radius:6px; margin: 0.25rem 0; background: #fafafa; }
+.notif-item .notif-message { font-size:0.95rem; color:#0f172a }
+.notif-item .notif-meta { font-size:0.75rem; color:#6b7280; margin-top:4px }
+.notif-item.status-confirmed { border-left: 4px solid #000000; }
+.notif-item.status-pending { border-left: 4px solid #f59e0b; }
+.notif-item.status-failed { border-left: 4px solid #000000; }
+.notif-item.status-canceled { border-left: 4px solid #000000; }
+.notif-empty { padding: 1rem; color:#6b7280; text-align:center }
+.notif-actions { display:flex; justify-content:flex-end; padding-top:0.25rem }
+.notif-actions button { background: transparent; border: 1px solid rgba(15,23,42,0.06); padding: 0.35rem 0.6rem; border-radius:6px; cursor:pointer }
+
+@media (max-width:640px) {
+	.notif-box { right: 50%; transform: translateX(50%); width: 90vw; }
+}
+</style>
+<header>
+	<div class="container header-flex"> 
+		<h1 style="color: #000000;">Peace Eternal Garden</h1>
+		<nav>
+			<div class="nav-links">
+				{% if not session.get('user_id') %}
+					<a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">About</a>
+					<a href="{{ url_for('search_plot') }}" class="{% if request.endpoint == 'search_plot' %}active{% endif %}">Browse</a>
+					<a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">Sign In</a>
+					<a href="{{ url_for('register') }}" class="{% if request.endpoint == 'register' %}active{% endif %}">Sign Up</a>
+				{% else %}
+					<a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+					<a href="{{ url_for('search_plot') }}" class="{% if request.endpoint == 'search_plot' %}active{% endif %}">Search Plots</a>
+
+					{# Notification button + dropdown. Expects `notifications` in template context or session.get('notifications') #}
+					{% set _notifications = notifications if (notifications is defined) else session.get('notifications', []) %}
+					<div class="notification" style="position:relative">
+						<a href="javascript:void(0)" id="notification-btn" class="{% if request.path == '/notification' %}active{% endif %}" aria-haspopup="true" aria-expanded="false" title="Notifications">
+							Notification
+							{# Only render the badge if there are notifications > 0 #}
+							{% if _notifications and _notifications|length > 0 %}
+								<span id="notif-badge" class="badge" aria-hidden="true">{{ _notifications|length }}</span>
+							{% endif %}
+						</a>
+
+						<div id="notification-box" class="notif-box" role="dialog" aria-label="Notifications" aria-hidden="true">
+							<div class="notif-header">Notifications</div>
+							<div class="notif-list">
+								{% if _notifications and _notifications|length > 0 %}
+									{% for n in _notifications %}
+										<div class="notif-item {{ 'status-' ~ (n.status|default('pending')) }}">
+											<div class="notif-message">{{ n.message }}</div>
+											<div class="notif-meta">{{ n.time if n.time is defined else '' }}</div>
+										</div>
+									{% endfor %}
+								{% else %}
+									<div class="notif-empty">No notifications</div>
+								{% endif %}
+							</div>
+							<div class="notif-actions"><button id="clear-notifs" type="button">Clear</button></div>
+						</div>
+					</div>
+					<a href="{{ url_for('user_profile') }}" class="{% if (request.path and request.path.startswith('/user')) or request.endpoint == 'user_profile' %}active{% endif %}" title="View Profile">
+						{{ session.get('first_name') }} {{ session.get('last_name') }}
+					</a>
+				{% endif %}
+			</div>
+			<button class="hamburger" id="hamburger-btn">
+				<span></span>
+				<span></span>
+				<span></span>
+			</button>
+			<div class="mobile-menu" id="mobile-menu">
+				{% if not session.get('user_id') %}
+					<a href="{{ url_for('home') }}">About</a>
+					<a href="{{ url_for('search_plot') }}">Browse</a>
+					<a href="{{ url_for('login') }}">Sign In</a>
+					<a href="{{ url_for('register') }}">Sign Up</a>
+				{% else %}
+					<a href="{{ url_for('home') }}">Home</a>
+					<a href="{{ url_for('search_plot') }}">Search Plots</a>
+					<a href="#" id="mobile-notification-link">Notification</a>
+					<a href="{{ url_for('user_profile') }}">{{ session.get('first_name') }} {{ session.get('last_name') }}</a>
+				{% endif %}
+			</div>
+		</nav>
+	</div>
+</header>
+
+<script>
+// Notification toggle + simple interactions
+(function(){
+	var btn = document.getElementById('notification-btn');
+	var box = document.getElementById('notification-box');
+	var badge = document.getElementById('notif-badge');
+	var clearBtn = document.getElementById('clear-notifs');
+	var mobileNotifLink = document.getElementById('mobile-notification-link');
+	if(!box) return;
+
+	function openBox(){
+		box.setAttribute('aria-hidden','false');
+		if(btn) btn.setAttribute('aria-expanded','true');
+		if(btn && !btn.classList.contains('active')) btn.classList.add('active');
+	}
+	function closeBox(){
+		box.setAttribute('aria-hidden','true');
+		if(btn) btn.setAttribute('aria-expanded','false');
+		if(btn && btn.classList.contains('active')) btn.classList.remove('active');
+		// restore to original parent/position if we moved it for mobile
+		if(box.__originalParent && box.__originalParent !== box.parentNode){
+			box.__originalParent.appendChild(box);
+			box.style.position = box.__originalPosition || '';
+			box.style.top = box.__originalTop || '';
+			box.style.right = box.__originalRight || '';
+			box.style.transform = box.__originalTransform || '';
+			box.style.maxWidth = box.__originalMaxWidth || '';
+		}
+	}
+
+	// Desktop button toggling
+	if(btn){
+		btn.addEventListener('click', function(e){
+			var isOpen = btn.getAttribute('aria-expanded') === 'true';
+			if(isOpen) closeBox(); else openBox();
+		});
+	}
+
+	// Mobile: allow the hamburger menu link to open the same panel
+	if(mobileNotifLink){
+		mobileNotifLink.addEventListener('click', function(e){
+			e.preventDefault();
+			var isOpen = box.getAttribute('aria-hidden') === 'false';
+			if(!isOpen){
+				// store original parent/position so we can restore on close
+				box.__originalParent = box.parentNode;
+				box.__originalPosition = box.style.position || '';
+				box.__originalTop = box.style.top || '';
+				box.__originalRight = box.style.right || '';
+				box.__originalTransform = box.style.transform || '';
+				box.__originalMaxWidth = box.style.maxWidth || '';
+				document.body.appendChild(box);
+				box.style.position = 'fixed';
+				box.style.top = '64px';
+				box.style.right = '50%';
+				box.style.transform = 'translateX(50%)';
+				box.style.maxWidth = '90vw';
+				openBox();
+				// close the mobile menu if open
+				var hamburgerBtn = document.getElementById('hamburger-btn');
+				var mobileMenu = document.getElementById('mobile-menu');
+				if(hamburgerBtn && mobileMenu && mobileMenu.classList.contains('active')){
+					hamburgerBtn.classList.remove('active');
+					mobileMenu.classList.remove('active');
+				}
+			} else {
+				closeBox();
+			}
+		});
+	}
+
+	// click outside to close (also account for mobile link)
+	document.addEventListener('click', function(e){
+		var clickedInsideBox = box.contains(e.target);
+		var clickedDesktopBtn = btn && btn.contains(e.target);
+		var clickedMobileLink = mobileNotifLink && mobileNotifLink.contains(e.target);
+		if(!clickedInsideBox && !clickedDesktopBtn && !clickedMobileLink){
+			closeBox();
+		}
+	});
+
+	// Escape to close
+	document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeBox(); });
+
+	if(clearBtn){
+		clearBtn.addEventListener('click', function(){
+			var list = box.querySelector('.notif-list');
+			if(!list) return;
+				list.innerHTML = '<div class="notif-empty">No notifications</div>';
+				if(badge && badge.parentNode){ badge.parentNode.removeChild(badge); badge = null; }
+			try{
+				var url = '{{ clear_notifications_url if (clear_notifications_url is defined) else "" }}';
+				if(url){
+					fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({clear:true})}).catch(function(){/* ignore */});
+				}
+			}catch(err){/* ignore */}
+		});
+	}
+	// Polling for new notifications (avoid polling if no URL provided)
+	try{
+		var notificationsUrl = '{{ notifications_url if (notifications_url is defined) else "" }}';
+	}catch(e){ var notificationsUrl = ''; }
+
+	var lastIds = new Set();
+	function renderNotifications(listEl, items){
+		if(!listEl) return;
+		if(!items || items.length === 0){
+			listEl.innerHTML = '<div class="notif-empty">No notifications</div>';
+			return;
+		}
+		listEl.innerHTML = '';
+		items.forEach(function(it){
+			var div = document.createElement('div');
+			div.className = 'notif-item status-' + (it.status || 'pending');
+			var msg = document.createElement('div'); msg.className = 'notif-message'; msg.textContent = it.message;
+			var meta = document.createElement('div'); meta.className = 'notif-meta'; meta.textContent = (new Date(it.time)).toLocaleString();
+			div.appendChild(msg); div.appendChild(meta);
+			listEl.appendChild(div);
+		});
+	}
+
+	function fetchNotifications(){
+		if(!notificationsUrl) return;
+		fetch(notificationsUrl, {credentials:'same-origin'}).then(function(r){ return r.json(); }).then(function(j){
+			if(!j || !j.success) return;
+			var items = j.notifications || [];
+			var listEl = box.querySelector('.notif-list');
+			renderNotifications(listEl, items);
+			try{
+				var count = items.length || 0;
+				if(count > 0){
+					if(!badge){
+						badge = document.createElement('span');
+						badge.id = 'notif-badge';
+						badge.className = 'badge';
+						badge.setAttribute('aria-hidden','true');
+						if(btn) btn.appendChild(badge);
+					}
+					badge.textContent = count;
+				} else {
+					if(badge && badge.parentNode){ badge.parentNode.removeChild(badge); badge = null; }
+				}
+			}catch(e){/* ignore DOM update errors */}
+
+			try{
+				var ids = new Set(items.map(function(x){return x.id;}));
+				var isNew = false;
+				ids.forEach(function(i){ if(!lastIds.has(i)) isNew = true; });
+				if(isNew && lastIds.size > 0){
+					if(badge){ badge.style.transform = 'scale(1.15)'; setTimeout(function(){ badge.style.transform = ''; }, 400); }
+				}
+				lastIds = ids;
+			}catch(err){/* ignore id tracking */}
+		}).catch(function(){/* ignore network errors */});
+	}
+
+	setTimeout(fetchNotifications, 300);
+	var pollInterval = setInterval(fetchNotifications, 8000);
+
+})();
+
+// Hamburger menu toggle
+(function(){
+	var hamburgerBtn = document.getElementById('hamburger-btn');
+	var mobileMenu = document.getElementById('mobile-menu');
+	if(!hamburgerBtn || !mobileMenu) return;
+
+	function toggleMenu(){
+		hamburgerBtn.classList.toggle('active');
+		mobileMenu.classList.toggle('active');
+	}
+
+	hamburgerBtn.addEventListener('click', toggleMenu);
+
+	// Close menu when clicking on a link
+	mobileMenu.addEventListener('click', function(e){
+		if(e.target.tagName === 'A'){
+			toggleMenu();
+		}
+	});
+
+	// Close menu when clicking outside
+	document.addEventListener('click', function(e){
+		if(!mobileMenu.contains(e.target) && !hamburgerBtn.contains(e.target)){
+			hamburgerBtn.classList.remove('active');
+			mobileMenu.classList.remove('active');
+		}
+	});
+
+	// Close on escape
+	document.addEventListener('keydown', function(e){
+		if(e.key === 'Escape'){
+			hamburgerBtn.classList.remove('active');
+			mobileMenu.classList.remove('active');
+		}
+	});
+})();
+</script>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Cemetery Mapping System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: url("{{ url_for('static', filename='images/Picture1.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #1f2937;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            color: #000000 !important;
+        }
+        nav a {
+            color: #1f2937;
+            text-decoration: none;
+            margin-left: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #000000;
+        }
+        nav a.active {
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .parent-section {
+            display: flex;
+            width: 100%;
+            height: 90vh;
+        }
+        .parent-section .left {
+            width: 30%;
+            height: 100%;
+            padding-right: 12.5px;
+        }
+        .parent-section .right {
+            width: 100%;
+            height: 100%;
+            padding-left: 12.5px;
+        }
+        .left, .right {
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .list-box {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+        }
+        .side-nav a {
+            padding: 0.75rem 1.5rem;
+            color: #1f2937;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid #000000;
+            margin-bottom: 1rem;
+            background: transparent;
+        }
+        .side-nav a:hover {
+            background: #f3f4f6;
+            color: #000000;
+        }
+
+        .side-nav a.active {
+            background: #000000;
+            color: #ffffff;
+            font-weight: bold;
+            border: 1px solid #000000;
+        }
+        .recent-reservations-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        .recent-reservations {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .recent-reservations th, .recent-reservations td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        .recent-reservations th {
+            background: #f8fafc;
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .recent-reservations td {
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .recent-reservations tr:last-child td {
+            border-bottom: none;
+        }
+        .status {
+            padding: 0.25em 0.75em;
+            border-radius: 5px;
+            font-size: 0.95em;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .status.confirmed {
+            background: #000000;
+            color: #ffffff;
+        }
+        .status.pending {
+            background: #facc15;
+            color: #18181b;
+        }
+        .action-btn {
+            padding: 0.4em 1em;
+            border: none;
+            border-radius: 5px;
+            background: #000000;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-right: 0.5em;
+        }
+        .action-btn:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+        .edit-btn {
+            background: #000000;
+            color: #ffffff;
+        }
+        .edit-btn:hover { background: #000000; color: #ffffff; }
+        .small-btn {
+            padding: 0.25em 0.6em;
+            font-size: 0.9em;
+            border-radius: 6px;
+            margin-left: 0.25rem;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(255,255,255,0.75);
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #ffffff;
+            padding: 2.5rem 2.5rem 2rem 2.5rem;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            text-align: center;
+            min-width: 320px;
+            max-width: 95vw;
+            position: relative;
+            animation: modalPop 0.25s cubic-bezier(.4,2,.6,1) both;
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-content h3 {
+            color: #000000;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .modal-content p {
+            color: #18181b;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.2px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .modal-content button {
+            padding: 0.6em 1.5em;
+            border: none;
+            border-radius: 7px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .btn-confirm {
+            background: linear-gradient(90deg, #000000 60%, #22d3ee 100%);
+            color: #18181b;
+        }
+        .btn-confirm:hover {
+            background: linear-gradient(90deg, #22d3ee 0%, #000000 100%);
+            color: #18181b;
+        }
+        .btn-fail {
+            background: linear-gradient(90deg, #000000 60%, #facc15 100%);
+            color: #18181b;
+        }
+        .btn-fail:hover {
+            background: linear-gradient(90deg, #facc15 0%, #000000 100%);
+            color: #18181b;
+        }
+        .btn-close {
+            background: transparent;
+            color: #a1a1aa;
+            border: 1px solid #3f3f46;
+            margin-top: 0.5rem;
+            font-size: 0.98rem;
+        }
+        .btn-close:hover {
+            background: #18181b;
+            color: #fff;
+            border-color: #000000;
+        }
+        .modal-close-x {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            font-size: 1.5rem;
+            color: #a1a1aa;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+        .modal-close-x:hover {
+            color: #000000;
+        }
+        @media (max-width: 500px) {
+            .modal-content {
+                padding: 1.2rem 0.5rem 1rem 0.5rem;
+                min-width: 0;
+            }
+            .modal-content h3 { font-size: 1.1rem; }
+            .modal-content p { font-size: 0.98rem; }
+            .modal-actions button { font-size: 0.98rem; }
+        }
+        @media (max-width: 900px) {
+            .parent-section {
+                flex-direction: column;
+                height: auto;
+            }
+            .parent-section .left,
+            .parent-section .right {
+                width: 100%;
+                padding: 10px 0;
+                height: auto;
+            }
+            .list-box {
+                padding: 1rem;
+            }
+            .recent-reservations th, .recent-reservations td {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="container header-flex">
+        <h1 style="color: #000000;">Peace Eternal Garden</h1>
+        <nav>
+            <a href="login.html" class="active">Admin</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Login Section -->
+<section class="parent-section">
+
+    {% include 'partials/admin_sidebar.html' %}
+
+    <div class="right">
+        <div class="list-box">
+            <div style="width:100%;padding:2rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                    <h2 style="color:#000000;margin:0;">Reservation List</h2>
+                    <input 
+                        type="text" 
+                        id="reservationSearch" 
+                        placeholder="Search reservations..." 
+                        style="padding: 0.5em 1em; border-radius: 6px; border: 1px solid #000000; background: #ffffff; color: #18181b; font-size: 1rem; outline: none; min-width: 220px;"
+                        oninput="filterReservations()"
+                    />
+                </div>
+                <div class="recent-reservations-wrapper">
+                    <table class="recent-reservations" id="reservationTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Block #</th>
+            <th>Row</th>
+            <th>Plot #</th>
+            <th>Date Reserved</th>
+            <th>Status</th>
+            <th>Price (₱)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="adminReservationsBody">
+        <!-- injected -->
+    </tbody>
+</table>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div id="reservationModal" class="modal">
+                <div class="modal-content">
+                    <h3 id="modalTitle">Reservation Action</h3>
+                    <p id="modalDesc"></p>
+                    <div class="modal-actions">
+                        <button class="btn-confirm" onclick="confirmPayment()">Confirm</button>
+                        <button class="btn-fail" onclick="failPayment()">Mark as Failed</button>
+                    </div>
+                    <button class="btn-close" onclick="closeModal()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Modal: Occupy Plot (collect deceased details) -->
+            <div id="occupyModal" class="modal">
+                <div class="modal-content">
+                    <button class="modal-close-x" onclick="closeOccupyModal()" aria-label="Close">&times;</button>
+                    <h3 id="occupyTitle">Fill Up Details</h3>
+                    <div style="text-align:left;max-width:420px;margin:0 auto;">
+                        <label style="font-weight:bold;display:block;margin-bottom:6px;color:#18181b;">Name of Deceased</label>
+                        <input id="deceasedName" type="text" style="width:100%;padding:8px;border-radius:6px;border:1px solid #3f3f46;background:#ffffff;color:#333;margin-bottom:12px;" />
+                        <label style="font-weight:bold;display:block;margin-bottom:6px;color:#18181b;">Date of Birth</label>
+                        <input id="deceasedDob" type="date" style="width:100%;padding:8px;border-radius:6px;border:1px solid #3f3f46;background:#ffffff;color:#333;margin-bottom:12px;" />
+                        <label style="font-weight:bold;display:block;margin-bottom:6px;color:#18181b;">Date of Death</label>
+                        <input id="deceasedDod" type="date" style="width:100%;padding:8px;border-radius:6px;border:1px solid #3f3f46;background:#ffffff;color:#333;margin-bottom:12px;" />
+                        <label style="font-weight:bold;display:block;margin-bottom:6px;color:#18181b;">Date of Buried</label>
+                        <input id="deceasedBuried" type="date" style="width:100%;padding:8px;border-radius:6px;border:1px solid #3f3f46;background:#ffffff;color:#333;margin-bottom:12px;" />
+                        <label style="font-weight:bold;display:block;margin-bottom:6px;color:#18181b;">Age</label>
+                        <input id="deceasedAge" type="number" min="0" readonly style="width:100%;padding:8px;border-radius:6px;border:1px solid #3f3f46;background:#ffffff;color:#333;margin-bottom:18px;" />
+                        <div style="display:flex;justify-content:center;gap:12px;">
+                            <button class="btn-confirm" onclick="submitOccupy()" id="occupyConfirmBtn">Proceed</button>
+                            <button class="btn-fail btn-close" onclick="closeOccupyModal()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    let currentReservation = {};
+    function openModal(name, plot) {
+        currentReservation = { name, plot };
+        document.getElementById('modalTitle').textContent = 'Reservation Action';
+        document.getElementById('modalDesc').textContent = `Reservation for ${name} (Plot #${plot})`;
+        document.getElementById('reservationModal').classList.add('active');
+    }
+    function closeModal() {
+        document.getElementById('reservationModal').classList.remove('active');
+    }
+    function confirmPayment() {
+        // confirm the currently selected reservation
+        if(!currentReservation.id) return;
+        fetch('/api/admin/reservation/'+currentReservation.id+'/confirm', {method:'POST'})
+            .then(r=>r.json()).then(j=>{ if(j.success){ loadAdminReservations(); closeModal(); } else alert(j.error||'Failed'); })
+            .catch(()=>alert('Failed'));
+    }
+    function failPayment() {
+        if(!currentReservation.id) return;
+        fetch('/api/admin/reservation/'+currentReservation.id+'/fail', {method:'POST'})
+            .then(r=>r.json()).then(j=>{ if(j.success){ loadAdminReservations(); closeModal(); } else alert(j.error||'Failed'); })
+            .catch(()=>alert('Failed'));
+    }
+
+    // Simple search filter for reservations
+    function filterReservations() {
+        const input = document.getElementById('reservationSearch').value.toLowerCase();
+        const table = document.getElementById('reservationTable');
+        const trs = table.querySelectorAll('tbody tr');
+        trs.forEach(tr => {
+            const text = tr.textContent.toLowerCase();
+            tr.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
+    // load reservations for admin
+    async function loadAdminReservations(){
+        try{
+            const res = await fetch('/api/admin/reservations');
+            const data = await res.json();
+            if(!data.success) return;
+            const body = document.getElementById('adminReservationsBody');
+            body.innerHTML = '';
+            data.reservations.forEach(r=>{
+                const tr = document.createElement('tr');
+                tr.dataset.plotId = r.plot_id || '';
+                tr.dataset.block = r.block || '';
+                tr.dataset.row = r.row || '';
+                tr.dataset.plotNumber = r.plot_number || '';
+                const statusClass = r.status === 'pending' ? 'pending' : (r.status === 'confirmed' ? 'confirmed' : '');
+                // create action cell: if pending show Action button, if confirmed show Occupy, else show Edit
+                let actionHtml = '';
+                if(r.status === 'pending'){
+                    actionHtml = '<button class="action-btn" onclick="openAction(this, '+r.id+', \''+(r.user_name||'')+'\', \''+(r.plot_number||'')+'\')">Action</button>';
+                } else if(r.status === 'confirmed'){
+                    actionHtml = '<button class="action-btn" onclick="openOccupyAction(this)">Occupy</button>';
+                } else {
+                    // action taken (e.g., failed) -> allow editing
+                    actionHtml = '<button class="action-btn edit-btn" onclick="openEdit('+r.id+', \''+(r.status||'')+'\', this)">Edit</button>';
+                }
+
+                tr.innerHTML = `
+                    <td>${r.user_name || 'User ' + r.user_id}</td>
+                    <td>${r.block || ''}</td>
+                    <td>${r.row || ''}</td>
+                    <td>${r.plot_number || ''}</td>
+                    <td>${new Date(r.reserved_at).toLocaleString()}</td>
+                    <td><span class="status ${statusClass}">${r.status}</span></td>
+                    <td>${r.price ? '₱' + Number(r.price).toLocaleString() : '-'}</td>
+                    <td class="action-cell">${actionHtml}</td>
+                `;
+                body.appendChild(tr);
+            });
+        }catch(e){console.error(e)}
+    }
+
+    // Open inline editor for status in the same row
+    function openEdit(id, currentStatus, btn){
+        const tr = btn.closest('tr');
+        if(!tr) return;
+        const statusTd = tr.children[5]; // status column
+        const actionTd = tr.querySelector('.action-cell');
+        // build select and save/cancel buttons
+        const select = document.createElement('select');
+        ['pending','confirmed','failed'].forEach(s=>{
+            const opt = document.createElement('option'); opt.value = s; opt.textContent = s; if(s===currentStatus) opt.selected = true; select.appendChild(opt);
+        });
+        select.style.padding = '0.25em 0.5em';
+        select.style.borderRadius = '6px';
+
+        const saveBtn = document.createElement('button'); saveBtn.textContent = 'Save'; saveBtn.className = 'action-btn small-btn';
+        const cancelBtn = document.createElement('button'); cancelBtn.textContent = 'Cancel'; cancelBtn.className = 'action-btn small-btn';
+        saveBtn.onclick = ()=> saveEdit(id, select.value, tr);
+        cancelBtn.onclick = ()=> cancelEdit(tr, currentStatus);
+
+        // replace status cell content and action cell
+        statusTd.dataset.prev = statusTd.innerHTML;
+        statusTd.innerHTML = '';
+        statusTd.appendChild(select);
+        actionTd.dataset.prev = actionTd.innerHTML;
+        actionTd.innerHTML = '';
+        actionTd.appendChild(saveBtn);
+        actionTd.appendChild(cancelBtn);
+    }
+
+    async function saveEdit(id, newStatus, tr){
+        try{
+            const res = await fetch('/api/admin/reservation/'+id+'/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:newStatus})});
+            const j = await res.json();
+            if(j.success){
+                // reload list to show updated values
+                await loadAdminReservations();
+            } else {
+                alert(j.error||'Failed to update status');
+                cancelEdit(tr, tr.querySelector('select')?.value || '');
+            }
+        }catch(e){ console.error(e); alert('Failed to update status'); cancelEdit(tr, tr.querySelector('select')?.value || ''); }
+    }
+
+    function cancelEdit(tr, prevStatus){
+        const statusTd = tr.children[5];
+        const actionTd = tr.querySelector('.action-cell');
+        if(statusTd.dataset.prev) statusTd.innerHTML = statusTd.dataset.prev;
+        if(actionTd && actionTd.dataset.prev) actionTd.innerHTML = actionTd.dataset.prev;
+    }
+
+    function openAction(btn, id, userName, plot){
+        const tr = btn.closest('tr');
+        currentReservation = { 
+            id, 
+            userName, 
+            plot, 
+            plotId: tr.dataset.plotId, 
+            block: tr.dataset.block, 
+            row: tr.dataset.row, 
+            plotNumber: tr.dataset.plotNumber 
+        };
+        document.getElementById('modalTitle').textContent = 'Reservation Action';
+        document.getElementById('modalDesc').textContent = `Reservation for ${userName} (Plot #${plot})`;
+        document.getElementById('reservationModal').classList.add('active');
+    }
+
+    function openOccupyAction(btn){
+        const tr = btn.closest('tr');
+        const plotId = tr.dataset.plotId;
+        const block = tr.dataset.block;
+        openOccupyModal(plotId, block);
+    }
+
+    // Occupy logic
+    function openOccupyModal(plotId, block) {
+        currentReservation.plotId = plotId;
+        currentReservation.block = block;
+        document.getElementById('occupyTitle').textContent = 'Fill Up Details';
+        // clear fields
+        document.getElementById('deceasedName').value = '';
+        document.getElementById('deceasedDob').value = '';
+        document.getElementById('deceasedDod').value = '';
+        document.getElementById('deceasedBuried').value = '';
+        document.getElementById('deceasedAge').value = '';
+        document.getElementById('occupyModal').classList.add('active');
+    }
+    function closeOccupyModal() {
+        document.getElementById('occupyModal').classList.remove('active');
+    }
+    async function submitOccupy() {
+        const name = document.getElementById('deceasedName').value.trim();
+        const dob = document.getElementById('deceasedDob').value;
+        const dod = document.getElementById('deceasedDod').value;
+        const buried_date = document.getElementById('deceasedBuried').value;
+        const age = document.getElementById('deceasedAge').value;
+        if (!name) { alert('Please provide the name of the deceased.'); return; }
+        const payload = {
+            plot_id: currentReservation.plotId,
+            plot: currentReservation.plotNumber,
+            block: currentReservation.block,
+            name, dob, dod, buried_date, age
+        };
+        const btn = document.getElementById('occupyConfirmBtn');
+        const oldText = btn.textContent;
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+        try {
+            const res = await fetch('/plots/occupy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('Server error');
+            const data = await res.json();
+            if (data.success) {
+                closeOccupyModal();
+                alert('Plot occupied successfully.');
+                // Redirect to deceased records page
+                window.location.href = '/admin/deceased';
+            } else {
+                alert(data.message || 'Failed to occupy plot');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('An error occurred while occupying the plot.');
+        } finally {
+            btn.textContent = oldText;
+            btn.disabled = false;
+        }
+    }
+
+    // Auto-calculate age based on DOB and DOD
+    function calculateAge() {
+        const dobInput = document.getElementById('deceasedDob');
+        const dodInput = document.getElementById('deceasedDod');
+        const ageInput = document.getElementById('deceasedAge');
+        const dob = new Date(dobInput.value);
+        const dod = new Date(dodInput.value);
+        if (dobInput.value && dodInput.value && dod > dob) {
+            let age = dod.getFullYear() - dob.getFullYear();
+            const monthDiff = dod.getMonth() - dob.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && dod.getDate() < dob.getDate())) {
+                age--;
+            }
+            ageInput.value = age;
+        } else {
+            ageInput.value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{ 
+        loadAdminReservations(); 
+        // Add event listeners for age calculation
+        document.getElementById('deceasedDob').addEventListener('change', calculateAge);
+        document.getElementById('deceasedDod').addEventListener('change', calculateAge);
+    });
+</script>
+</body>
+</html>

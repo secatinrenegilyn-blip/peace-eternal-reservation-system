@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register - Cemetery Mapping System</title>
+    <style>
+        body {
+                background: url("{{ url_for('static', filename='images/Picture1.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #374151;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        .register-section {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .register-content {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.5); /* semi-transparent white */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px); /* for Safari */
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 800px;
+        }
+        .register-content h2 {
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: white;
+        }
+        .register-content input, .register-content select {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .register-content button {
+            background: #000000;
+            color: #fff;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .register-content button:hover {
+            background: #1d4ed8;
+        }
+
+        .register-content form {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .form-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 768px) {
+            .register-content {
+                padding: 1rem;
+                margin: 0 1rem;
+            }
+            .register-content h2 {
+                font-size: 1.5rem;
+                margin-bottom: 2rem;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .register-content input, .register-content select, .register-content button {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+{% include 'partials/navbar.html' %}
+
+<!-- Registration Section -->
+<section class="register-section">
+    <div class="container register-content">
+        <h2>Create Your Account</h2>
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-row">
+                <div class="form-column">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                {% if category == 'danger' %}
+                                    <div style="color: black; margin-bottom: 10px; font-weight: bold;">{{ message }}</div>
+                                {% else %}
+                                    <div style="color: black; margin-bottom: 10px; font-weight: bold;">{{ message }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <input type="text" name="first_name" placeholder="First Name" required value="{{ first_name|default('') }}" />
+                    <input type="text" name="middle_name" placeholder="Middle Name" value="{{ middle_name|default('') }}" />
+                    <input type="text" name="last_name" placeholder="Last Name" required value="{{ last_name|default('') }}" />
+                    <input type="email" name="email" placeholder="Email" required value="{{ email|default('') }}" />
+                </div>
+                <div class="form-column">
+                    <input type="text" name="phone" placeholder="Phone Number" value="{{ phone|default('') }}" />
+                    <input type="text" name="username" placeholder="Username" required value="{{ username|default('') }}" />
+                    <label style="margin-top:0.5rem; text-align:left; font-weight:bold;">Security question</label>
+                    <select name="security_question">
+                        <option value="" {% if (security_question|default('')) == '' %}selected{% endif %}>-- Select a question --</option>
+                        <option value="What is your mother's maiden name?" {% if security_question == "What is your mother's maiden name?" %}selected{% endif %}>What is your mother's maiden name?</option>
+                        <option value="What was the name of your first pet?" {% if security_question == 'What was the name of your first pet?' %}selected{% endif %}>What was the name of your first pet?</option>
+                        <option value="What city were you born in?" {% if security_question == 'What city were you born in?' %}selected{% endif %}>What city were you born in?</option>
+                        <option value="What was your first school's name?" {% if security_question == "What was your first school's name?" %}selected{% endif %}>What was your first school's name?</option>
+                        <option value="What is your favorite color?" {% if security_question == 'What is your favorite color?' %}selected{% endif %}>What is your favorite color?</option>
+                    </select>
+                    <input type="text" name="security_answer" placeholder="Answer to security question" value="" />
+                    <input type="password" name="password" placeholder="Password" required value="" />
+                    <input type="password" name="confirm_password" placeholder="Confirm Password" required value="" />
+                </div>
+            </div>
+            <button type="submit" style="margin-top: 1rem; margin-bottom: 1rem;">Register</button>
+        </form>
+    </div>
+</section>
+
+</body>
+</html>

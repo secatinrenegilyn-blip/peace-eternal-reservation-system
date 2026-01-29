@@ -1,0 +1,165 @@
+<style>
+  .left {
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .side-nav a {
+    padding: 0.75rem 1.5rem;
+    color: #374151;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.2s, color 0.2s;
+    border: 1px solid #000000;
+    margin-bottom: 1rem;
+    background: transparent;
+  }
+  .side-nav a:hover {
+    background: #f3f4f6;
+    color: #000000;
+  }
+
+  /* make logout hover clearly red */
+  .side-nav a#logoutBtn:hover {
+    background: #000000;
+    color: #fff;
+    border-color: #000000;
+  }
+
+  .side-nav a.active {
+    background: #000000;
+    color: #fff;
+    font-weight: bold;
+    border: 1px solid #000000;
+  }
+  /* Modal Styles - Admin Theme */
+  #logoutModal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.7); /* light overlay */
+    justify-content: center;
+    align-items: center;
+  }
+  #logoutModal .modal-content {
+    background: #ffffff;
+    color: #18181b;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
+    min-width: 320px;
+    text-align: center;
+    animation: modalPop 0.25s cubic-bezier(.4,2,.6,1) both;
+    border: 2px solid #000000;
+  }
+  #logoutModal .modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  #confirmLogout {
+    background: #000000;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    transition: background 0.2s;
+  }
+
+  #cancelLogout {
+    background: #000000;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
+    transition: background 0.2s;
+  }
+
+  #confirmLogout:hover {
+    background: #000000;
+  }
+  #cancelLogout:hover {
+    background: #000000;
+    color: #fff;
+  }
+  @keyframes modalPop {
+    0% {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Responsive: make sidebar fill width on small screens without changing desktop */
+  @media (max-width: 768px) {
+    .left {
+      width: 100% !important;
+      padding: 12px !important;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+    .list-box {
+      width: 100%;
+      border-radius: 12px 12px 0 0 !important;
+      box-shadow: none !important;
+    }
+    .side-nav a {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+</style>
+
+<div class="left">
+  <div class="list-box side-nav" style="align-items: stretch">
+    <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}"> Dashboard </a>
+    <a href="{{ url_for('admin_reservation') }}" class="{% if request.endpoint == 'admin_reservation' %}active{% endif %}"> Reservation </a>
+    <a href="{{ url_for('admin_deceased') }}" class="{% if request.endpoint == 'admin_deceased' %}active{% endif %}"> Deceased Records </a>
+    <a href="{{ url_for('admin_plot') }}" class="{% if request.endpoint == 'admin_plot' %}active{% endif %}"> Plot Management </a>
+    <a href="{{ url_for('admin_settings') }}" id="settings" class="{% if request.endpoint == 'admin_settings' %}active{% endif %}">Settings</a>
+    <a href="#" id="logoutBtn">Logout</a>
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal">
+      <div class="modal-content">
+        <h3 style="color:#000000; margin-bottom:1rem;">Logout Confirmation</h3>
+        <p style="margin-bottom:1.5rem;">Are you sure you want to logout from the admin panel?</p>
+        <div class="modal-actions">
+          <button id="confirmLogout">Logout</button>
+          <button id="cancelLogout">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("logoutBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    document.getElementById("logoutModal").style.display = "flex";
+  });
+  document
+    .getElementById("cancelLogout")
+    .addEventListener("click", function () {
+      document.getElementById("logoutModal").style.display = "none";
+    });
+  document
+    .getElementById("confirmLogout")
+    .addEventListener("click", function () {
+      window.location.href = "{{ url_for('admin_logout') }}";
+    });
+</script>

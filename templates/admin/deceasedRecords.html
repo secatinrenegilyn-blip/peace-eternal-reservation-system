@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Cemetery Mapping System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: url("{{ url_for('static', filename='images/Picture1.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #1f2937;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            color: #000000 !important;
+        }
+        nav a {
+            color: #1f2937;
+            text-decoration: none;
+            margin-left: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #000000;
+        }
+        nav a.active {
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .parent-section {
+            display: flex;
+            width: 100%;
+            height: 90vh;
+        }
+        .parent-section .left {
+            width: 30%;
+            height: 100%;
+            padding-right: 12.5px;
+        }
+        .parent-section .right {
+            width: 100%;
+            height: 100%;
+            padding-left: 12.5px;
+        }
+        .left, .right {
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .list-box {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+        }
+        .side-nav a {
+            padding: 0.75rem 1.5rem;
+            color: #1f2937;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid #000000;
+            margin-bottom: 1rem;
+            background: transparent;
+        }
+        .side-nav a:hover {
+            background: #f3f4f6;
+            color: #000000;
+        }
+        .side-nav a.active {
+            background: #000000;
+            color: #ffffff;
+            font-weight: bold;
+            border: 1px solid #000000;
+        }
+        .recent-reservations-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        .recent-reservations {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .recent-reservations th, .recent-reservations td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        .recent-reservations th {
+            background: #f8fafc;
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .recent-reservations td {
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .recent-reservations tr:last-child td {
+            border-bottom: none;
+        }
+        @media (max-width: 900px) {
+            .parent-section {
+                flex-direction: column;
+                height: auto;
+            }
+            .parent-section .left,
+            .parent-section .right {
+                width: 100%;
+                padding: 10px 0;
+                height: auto;
+            }
+            .list-box {
+                padding: 1rem;
+            }
+            .recent-reservations th, .recent-reservations td {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="container header-flex">
+        <h1 style="color: #000000;">Peace Eternal Garden</h1>
+        <nav>
+            <a href="login.html" class="active">Admin</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Login Section -->
+<section class="parent-section">
+
+    {% include 'partials/admin_sidebar.html' %}
+
+    <div class="right">
+        <div class="list-box">
+            <div style="width:100%;padding:2rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                    <h2 style="color:#000000;margin:0;">Deceased Records</h2>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <button 
+                            id="addDeceasedBtn"
+                            onclick="openAddDeceasedModal()"
+                            style="background: #000000; border: none; border-radius: 6px; padding: 0.45em 1em; display: flex; align-items: center; cursor: pointer; transition: background 0.2s;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" style="margin-right: 0.4em;">
+                                <path stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7H5"/>
+
+                            </svg>
+                            <span style="color:#ffffff;font-weight:bold;">Add</span>
+                        </button>
+                        <input 
+                            type="text" 
+                            id="deceasedSearch" 
+                            placeholder="Search records..." 
+                            style="padding: 0.5em 1em; border-radius: 6px; border: 1px solid #000000; background: #ffffff; color: #333; font-size: 1rem; outline: none; min-width: 220px;"
+                            oninput="filterDeceased()"
+                        />
+                    </div>
+                </div>
+                <div class="recent-reservations-wrapper">
+                    <table class="recent-reservations" id="deceasedTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Date of Birth</th>
+                                <th>Date of Death</th>
+                                <th>Age</th>
+                                <th>Plot #</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if deceased_records %}
+                                {% for d in deceased_records %}
+                                <tr data-id="{{ d.id }}" data-plot="{{ d.plot_number or d.square_meter or '' }}">
+                                    <td>{{ d.name }}</td>
+                                    <td>{{ d.dob or '' }}</td>
+                                    <td>{{ d.dod or '' }}</td>
+                                    <td>{{ d.age or '' }}</td>
+                                    <td class="plot-cell">{{ d.plot_number or d.square_meter or '' }}</td>
+                                    <td>
+                                        <button class="action-btn edit-deceased-btn" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.4em 1.2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;" onclick="openEditDeceasedModal('{{ d.id }}','{{ d.name }}','{{ d.dob }}','{{ d.dod }}','{{ d.age }}','{{ d.square_meter }}')">Edit</button>
+                                        <button class="action-btn delete-deceased-btn" data-id="{{ d.id }}" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.4em 0.8em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;margin-left:6px;">Delete</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="6" style="color:#9ca3af;text-align:center;padding:2rem;">No records yet.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    let currentReservation = {};
+    function openModal(name, plot) {
+        currentReservation = { name, plot };
+        document.getElementById('modalTitle').textContent = 'Reservation Action';
+        document.getElementById('modalDesc').textContent = `Reservation for ${name} (Plot #${plot})`;
+        document.getElementById('reservationModal').classList.add('active');
+    }
+    function closeModal() {
+        document.getElementById('reservationModal').classList.remove('active');
+    }
+    function confirmPayment() {
+        alert(`Payment confirmed for ${currentReservation.name} (Plot #${currentReservation.plot})`);
+        closeModal();
+    }
+    function failPayment() {
+        alert(`Payment failed for ${currentReservation.name} (Plot #${currentReservation.plot})`);
+        closeModal();
+    }
+
+    // Simple search filter for reservations
+    function filterReservations() {
+        const input = document.getElementById('reservationSearch').value.toLowerCase();
+        const table = document.getElementById('reservationTable');
+        const trs = table.querySelectorAll('tbody tr');
+        trs.forEach(tr => {
+            const text = tr.textContent.toLowerCase();
+            tr.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
+    // Simple search filter for deceased records
+    function filterDeceased() {
+        const input = document.getElementById('deceasedSearch').value.toLowerCase();
+        const table = document.getElementById('deceasedTable');
+        const trs = table.querySelectorAll('tbody tr');
+        trs.forEach(tr => {
+            const text = tr.textContent.toLowerCase();
+            tr.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
+    // Modal open/close for Add Deceased
+    function openAddDeceasedModal() {
+        document.getElementById('addDeceasedModal').style.display = 'flex';
+    }
+    function closeAddDeceasedModal() {
+        document.getElementById('addDeceasedModal').style.display = 'none';
+    }
+
+    // Edit Deceased Modal logic
+    function openEditDeceasedModal(id, name, dob, dod, age, squareMeter) {
+        // set hidden id
+        const hid = document.getElementById('editDeceasedId'); if(hid) hid.value = id || '';
+        document.getElementById('editDeceasedName').value = name || '';
+        document.getElementById('editDeceasedDob').value = dob || '';
+        document.getElementById('editDeceasedDod').value = dod || '';
+        document.getElementById('editDeceasedAge').value = age || '';
+        // populate select to ensure value exists
+        const sel = document.getElementById('editDeceasedSquareMeter');
+        if(sel){
+            // if option not present, add it
+            let opt = Array.from(sel.options).find(o=>o.value === (squareMeter || ''));
+            if(!opt && (squareMeter || '')){
+                opt = document.createElement('option'); opt.value = squareMeter; opt.textContent = squareMeter; sel.appendChild(opt);
+            }
+            sel.value = squareMeter || '';
+        }
+        document.getElementById('editDeceasedModal').style.display = 'flex';
+    }
+    function closeEditDeceasedModal() {
+        document.getElementById('editDeceasedModal').style.display = 'none';
+    }
+</script>
+
+<!-- Add Deceased Modal -->
+<div id="addDeceasedModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(255,255,255,0.9); justify-content:center; align-items:center;">
+    <div style="background:#ffffff; padding:2rem 2.5rem; border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,0.25); min-width:500px; max-width:45vw; position:relative; text-align:center;">
+        <h3 style="color:#000000;margin-bottom:1rem;">Add Deceased Record</h3>
+    <form id="addDeceasedForm" style="margin-bottom:0;">
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="deceasedName" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Name</label>
+                <input id="deceasedName" type="text" placeholder="Full Name" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="deceasedDob" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Date of Birth</label>
+                <input id="deceasedDob" type="date" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="deceasedDod" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Date of Death</label>
+                <input id="deceasedDod" type="date" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="deceasedAge" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Age</label>
+                <input id="deceasedAge" type="number" placeholder="Age" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1.5rem;">
+                <label for="deceasedSquareMeter" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Select Plot</label>
+                <select id="deceasedSquareMeter" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required>
+                    <option value="">-- select plot --</option>
+                    {% if available_plots %}
+                        {% for p in available_plots %}
+                            <option value="{{ p.id }}">{{ p.number }}{% if p.block %} (Block {{ p.block }}){% endif %}{% if p.row %} - Row {{ p.row }}{% endif %}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div style="display:flex;justify-content:center;gap:1rem;"> 
+                <button type="submit" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.6em 2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Save</button>
+                <button type="button" onclick="closeAddDeceasedModal()" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.6em 2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Deceased Modal -->
+<div id="editDeceasedModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(255,255,255,0.9); justify-content:center; align-items:center;">
+    <div style="background:#ffffff; padding:2rem 2.5rem; border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,0.25); min-width:500px; max-width:45vw; position:relative; text-align:center;">
+        <h3 style="color:#000000;margin-bottom:1rem;">Edit Deceased Record</h3>
+        <form id="editDeceasedForm" style="margin-bottom:0;">
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editDeceasedName" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Name</label>
+                <input id="editDeceasedName" type="text" placeholder="Full Name" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editDeceasedDob" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Date of Birth</label>
+                <input id="editDeceasedDob" type="date" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editDeceasedDod" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Date of Death</label>
+                <input id="editDeceasedDod" type="date" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editDeceasedAge" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Age</label>
+                <input id="editDeceasedAge" type="number" placeholder="Age" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required />
+            </div>
+            <input id="editDeceasedId" type="hidden" />
+            <div style="text-align:left;margin-bottom:1.5rem;">
+                <label for="editDeceasedSquareMeter" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Square Meter</label>
+                <select id="editDeceasedSquareMeter" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#333;font-size:1rem;" required>
+                    <option value="">-- select plot --</option>
+                    {% if available_plots %}
+                        {% for p in available_plots %}
+                            <option value="{{ p.id }}">{{ p.number }}{% if p.block %} (Block {{ p.block }}){% endif %}{% if p.row %} - Row {{ p.row }}{% endif %}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div style="display:flex;justify-content:center;gap:1rem;">
+                <button type="submit" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.6em 2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Save</button>
+                <button type="button" onclick="closeEditDeceasedModal()" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.6em 2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+<script>
+// Delete deceased handler and plot refresh
+function addDeleteHandlers(){
+    document.querySelectorAll('.delete-deceased-btn').forEach(btn=>{
+        if(btn.__bound) return; btn.__bound = true;
+        btn.addEventListener('click', function(){
+            const id = btn.dataset.id;
+            if(!id) return;
+            if(!confirm('Delete this deceased record?')) return;
+            fetch(`/admin/deceased/${id}/delete`, { method: 'POST' })
+            .then(async res=>{ const data = await res.json().catch(()=>({})); if(!res.ok || !data.success){ alert('Error: '+(data.error||'Failed')); return; }
+                // remove row
+                const tr = document.querySelector(`tr[data-id='${id}']`);
+                let plotVal = '';
+                if(tr){ plotVal = tr.dataset.plot || tr.querySelector('.plot-cell')?.textContent || ''; tr.remove(); }
+                // add plot back to select
+                if(plotVal){
+                    const sel = document.getElementById('deceasedSquareMeter');
+                    if(sel){
+                        const opt = document.createElement('option'); opt.value = plotVal; opt.textContent = plotVal; sel.appendChild(opt);
+                    }
+                }
+            })
+            .catch(err=>{ console.error(err); alert('Unexpected error'); });
+        });
+    });
+}
+
+// Refresh plots and repopulate select (basic)
+function refreshPlots(){
+    fetch('/api/plots').then(r=>r.json()).then(data=>{
+        if(!data || !data.success) return;
+        const sel = document.getElementById('deceasedSquareMeter');
+        if(!sel) return;
+        const current = sel.value;
+        // remember existing plot numbers in table to avoid adding already-occupied
+        const used = new Set();
+        document.querySelectorAll('#deceasedTable tbody tr').forEach(tr=>{ const p = tr.dataset.plot || tr.querySelector('.plot-cell')?.textContent || ''; if(p) used.add(p); });
+        // rebuild options
+        sel.innerHTML = '<option value="">-- select plot --</option>';
+        data.plots.forEach(p=>{
+            // include only non-occupied
+            if(p.status && p.status.toLowerCase() === 'occupied') return;
+            if(used.has(p.number)) return;
+            const o = document.createElement('option'); o.value = p.number; o.textContent = p.number + (p.block?(' (Block '+p.block+')'):'') + (p.row?(' - Row '+p.row):''); sel.appendChild(o);
+        });
+        if(current) sel.value = current;
+    }).catch(()=>{});
+}
+
+document.addEventListener('DOMContentLoaded', function(){ addDeleteHandlers(); refreshPlots(); });
+</script>
+<script>
+// Handle add deceased form submit
+document.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('addDeceasedForm');
+    if(!form) return;
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const name = document.getElementById('deceasedName').value.trim();
+        const dob = document.getElementById('deceasedDob').value;
+        const dod = document.getElementById('deceasedDod').value;
+        const age = document.getElementById('deceasedAge').value;
+        const plot = document.getElementById('deceasedSquareMeter').value;
+        if(!name || !plot){ alert('Name and plot are required'); return; }
+    const payload = { name, dob, dod, age, plot_id: plot };
+        fetch('/admin/deceased/add', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+        .then(async res=>{ const data = await res.json().catch(()=>({})); if(!res.ok || !data.success){ alert('Error: '+(data.error||'Failed to add')); return; }
+            const d = data.deceased;
+            // insert new row at top
+            const tbody = document.querySelector('#deceasedTable tbody');
+            if(tbody){
+                const tr = document.createElement('tr'); tr.dataset.id = d.id; tr.dataset.plot = d.plot ? d.plot.plot_number || '' : '';
+                tr.innerHTML = `<td>${d.name}</td><td>${dob||''}</td><td>${dod||''}</td><td>${age||''}</td><td class="plot-cell">${d.plot ? d.plot.plot_number : ''}</td><td><button class="action-btn edit-deceased-btn" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.4em 1.2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;" onclick="openEditDeceasedModal('${d.id}','${d.name}','${dob||''}','${dod||''}','${age||''}','${d.plot ? d.plot.plot_id : ''}')">Edit</button><button class="action-btn delete-deceased-btn" data-id="${d.id}" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.4em 0.8em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;margin-left:6px;">Delete</button></td>`;
+                // if there was a 'No records yet' row, remove it
+                const empty = tbody.querySelector('tr td[colspan="6"]'); if(empty) tbody.innerHTML = '';
+                tbody.insertBefore(tr, tbody.firstChild);
+            }
+            // remove selected plot from select
+            const sel = document.getElementById('deceasedSquareMeter'); if(sel){ const opt = sel.querySelector(`option[value="${d.plot ? d.plot.plot_id : ''}"]`); if(opt) opt.remove(); }
+            refreshPlots(); addDeleteHandlers(); closeAddDeceasedModal();
+            form.reset();
+        })
+        .catch(err=>{ console.error(err); alert('Unexpected error'); });
+    });
+});
+</script>
+<script>
+// Handle edit deceased form submit
+document.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('editDeceasedForm');
+    if(!form) return;
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const id = document.getElementById('editDeceasedId').value;
+        const name = document.getElementById('editDeceasedName').value.trim();
+        const dob = document.getElementById('editDeceasedDob').value;
+        const dod = document.getElementById('editDeceasedDod').value;
+        const age = document.getElementById('editDeceasedAge').value;
+    const plot = document.getElementById('editDeceasedSquareMeter').value;
+        if(!id) { alert('Missing record id'); return; }
+    const payload = { name, dob, dod, age, plot_id: plot };
+        fetch(`/admin/deceased/${id}/edit`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+        .then(async res=>{ const data = await res.json().catch(()=>({})); if(!res.ok || !data.success){ alert('Error: '+(data.error||'Failed to save')); return; }
+            // update row in table
+            const tr = document.querySelector(`tr[data-id='${id}']`);
+            if(tr){
+                tr.querySelector('td').textContent = name;
+                tr.querySelector('td:nth-child(2)').textContent = dob || '';
+                tr.querySelector('td:nth-child(3)').textContent = dod || '';
+                tr.querySelector('td:nth-child(4)').textContent = age || '';
+                tr.dataset.plot = plot || '';
+                const plotCell = tr.querySelector('.plot-cell'); if(plotCell) plotCell.textContent = plot || '';
+            }
+            // refresh plots/selects
+            refreshPlots();
+            addDeleteHandlers();
+            closeEditDeceasedModal();
+        })
+        .catch(err=>{ console.error(err); alert('Unexpected error'); });
+    });
+});
+</script>
+</html>

@@ -1,0 +1,98 @@
+
+<div class="modal-overlay" id="modalOverlay">
+    <div class="plot-details modal" id="plotModal">
+        <div class="plot-information">
+            <div id="modalPlotDetails">
+                <!-- Details will be dynamically inserted here -->
+            </div>
+            <div class="plot-actions">
+                <button id="reserveBtn">Reserve</button>
+                <button id="closeModalBtn">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="payment-modal-overlay" id="paymentModalOverlay">
+    <div class="payment modal">
+        <div class="payment-options">
+            <h1>Payment Option</h1>
+            <button id="gcashOptionBtn">Gcash</button>
+            <button id="inPersonOptionBtn">In-Person</button>
+        </div>
+        <div class="payment-information" id="gcashPaymentInfo">
+            <h2>Pay ₱5,000 with GCash</h2>
+            <!-- Add this block to show recipient details -->
+            <div style="margin-bottom:1rem;padding:1rem;background:#f1f5f9;border-radius:0.5rem;">
+                <strong>Send payment to:</strong><br>
+                <span>GCash Name: <b>Peace Eternal Garden</b></span><br>
+                <span>GCash Number: <b>09814816694</b></span>
+            </div>
+            <form class="gcash-form" id="gcashForm">
+                <label for="gcashName">Gcash Account Name</label>
+                <input type="text" id="gcashName" name="gcashName" required />
+
+                <label for="gcashNumber">Gcash Number</label>
+                <input type="text" id="gcashNumber" name="gcashNumber" required pattern="09[0-9]{9}" placeholder="e.g. 09XXXXXXXXX" />
+
+                <label for="gcashRef">Reference Number</label>
+                <input type="text" id="gcashRef" name="gcashRef" required />
+
+                <label for="gcashProof">Upload Proof of Payment</label>
+                <input type="file" id="gcashProof" name="gcashProof" accept="image/*" required />
+                <img id="gcashPreview" style="display:none;" />
+            </form>
+            <div class="payment-actions">
+                <button id="confirmPaymentBtn">Confirm Payment</button>
+                <button id="closePaymentModalBtn">Close</button>
+            </div>
+        </div>
+        <div class="payment-information" id="inPersonPaymentInfo">
+            <h2>In-Person Payment</h2>
+            <div>
+                <p>Please visit our office to complete your reservation payment.</p>
+            </div>
+            <div class="payment-actions">
+                <button id="closePaymentModalBtn2">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModalOverlay" style="z-index:3000;">
+    <div class="plot-details modal" style="min-width:350px;max-width:90vw;flex-direction:column;align-items:center;justify-content:center;">
+        <h2 style="color:#4ade80;margin-bottom:1rem;">Payment Successful!</h2>
+        <p>Your Gcash payment has been submitted.<br>Your reservation is now pending confirmation.</p>
+        <button id="closeSuccessModalBtn" style="margin-top:2rem;background:#4ade80;color:#fff;">Close</button>
+    </div>
+</div>
+
+<!-- Fill-Up Modal -->
+<div class="modal-overlay" id="fillUpModalOverlay">
+    <div class="fill-up-modal">
+        <h2 style="color:#4ade80;margin-bottom:1rem;">Fill Up Details</h2>
+        <form id="fillUpForm" class="fill-up-modal-form" style="width:100%;display:flex;flex-direction:column;gap:1rem;">
+            <label>
+                Name of Deceased
+                <input type="text" id="deceasedName" name="deceasedName" required>
+            </label>
+            <label>
+                Date of Birth
+                <input type="date" id="dob" name="dob" required>
+            </label>
+            <label>
+                Date of Death
+                <input type="date" id="dod" name="dod" required>
+            </label>
+            <label>
+                Age
+                <input type="number" id="age" name="age" min="0" required>
+            </label>
+            <div class="modal-btns">
+                <button type="submit" id="proceedToPaymentBtn">Proceed</button>
+                <button type="button" id="cancelFillUpBtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

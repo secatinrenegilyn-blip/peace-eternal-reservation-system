@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Cemetery Mapping System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: url("{{ url_for('static', filename='images/Picture1.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #1f2937;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            color: #000000 !important;
+        }
+        nav a {
+            color: #1f2937;
+            text-decoration: none;
+            margin-left: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #000000;
+        }
+        nav a.active {
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .parent-section {
+            display: flex;
+            width: 100%;
+            height: 90vh;
+        }
+        .parent-section .left {
+            width: 30%;
+            height: 100%;
+            padding-right: 12.5px;
+        }
+        .parent-section .right {
+            width: 100%;
+            height: 100%;
+            padding-left: 12.5px;
+        }
+        .left, .right {
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .list-box {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+        }
+        .side-nav a {
+            padding: 0.75rem 1.5rem;
+            color: #1f2937;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid #000000;
+            margin-bottom: 1rem;
+            background: transparent;
+        }
+        .side-nav a:hover {
+            background: #f3f4f6;
+            color: #000000;
+        }
+
+        .side-nav a.active {
+            background: #000000;
+            color: #ffffff;
+            font-weight: bold;
+            border: 1px solid #000000;
+        }
+        .recent-reservations-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        .recent-reservations {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        .recent-reservations th, .recent-reservations td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        .recent-reservations th {
+            background: #f8fafc;
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .recent-reservations td {
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .recent-reservations tr:last-child td {
+            border-bottom: none;
+        }
+        .status {
+            padding: 0.25em 0.75em;
+            border-radius: 5px;
+            font-size: 0.95em;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .status.confirmed {
+            background: #000000;
+            color: #ffffff;
+        }
+        .status.pending {
+            background: #facc15;
+            color: #18181b;
+        }
+        .action-btn {
+            padding: 0.4em 1em;
+            border: none;
+            border-radius: 5px;
+            background: #22d3ee;
+            color: #18181b;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-right: 0.5em;
+        }
+        .action-btn:hover {
+            background: #0ea5e9;
+            color: #fff;
+        }
+        .edit-btn {
+            background: #f59e0b;
+            color: #18181b;
+        }
+        .edit-btn:hover { background: #d97706; color: #fff; }
+        .small-btn {
+            padding: 0.25em 0.6em;
+            font-size: 0.9em;
+            border-radius: 6px;
+            margin-left: 0.25rem;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(255,255,255,0.75);
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #ffffff;
+            padding: 2.5rem 2.5rem 2rem 2.5rem;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            text-align: center;
+            min-width: 320px;
+            max-width: 95vw;
+            position: relative;
+            animation: modalPop 0.25s cubic-bezier(.4,2,.6,1) both;
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-content h3 {
+            color: #000000;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .modal-content p {
+            color: #18181b;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.2px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .modal-content button {
+            padding: 0.6em 1.5em;
+            border: none;
+            border-radius: 7px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .btn-confirm {
+            background: linear-gradient(90deg, #000000 60%, #22d3ee 100%);
+            color: #ffffff;
+        }
+        .btn-confirm:hover {
+            background: linear-gradient(90deg, #22d3ee 0%, #000000 100%);
+            color: #ffffff;
+        }
+        .btn-fail {
+            background: linear-gradient(90deg, #000000 60%, #facc15 100%);
+            color: #ffffff;
+        }
+        .btn-fail:hover {
+            background: linear-gradient(90deg, #facc15 0%, #000000 100%);
+            color: #ffffff;
+        }
+        .btn-close {
+            background: transparent;
+            color: #a1a1aa;
+            border: 1px solid #3f3f46;
+            margin-top: 0.5rem;
+            font-size: 0.98rem;
+        }
+        .btn-close:hover {
+            background: #18181b;
+            color: #fff;
+            border-color: #000000;
+        }
+        .modal-close-x {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            font-size: 1.5rem;
+            color: #a1a1aa;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+        .modal-close-x:hover {
+            color: #000000;
+        }
+        @media (max-width: 500px) {
+            .modal-content {
+                padding: 1.2rem 0.5rem 1rem 0.5rem;
+                min-width: 0;
+            }
+            .modal-content h3 { font-size: 1.1rem; }
+            .modal-content p { font-size: 0.98rem; }
+            .modal-actions button { font-size: 0.98rem; }
+        }
+        @media (max-width: 900px) {
+            .parent-section {
+                flex-direction: column;
+                height: auto;
+            }
+            .parent-section .left,
+            .parent-section .right {
+                width: 100%;
+                padding: 10px 0;
+                height: auto;
+            }
+            .list-box {
+                padding: 1rem;
+            }
+            .recent-reservations th, .recent-reservations td {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="container header-flex">
+        <h1 style="color: #000000;">Peace Eternal Garden</h1>
+        <nav>
+            <a href="login.html" class="active">Admin</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Login Section -->
+<section class="parent-section">
+
+    {% include 'partials/admin_sidebar.html' %}
+
+    <div class="right">
+        <div class="list-box">
+            <div class="overview-section" style="width:100%">
+
+                {# flash messages (category, message) #}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div style="width:100%; margin-bottom:16px;">
+                            {% for cat, msg in messages %}
+                                <div style="padding:10px 12px; border-radius:8px; margin-bottom:8px; font-weight:600;"
+                                     {% if cat == 'success' %}style="background:#052e14; color:#bbf7d0; border:1px solid #064e2a;"
+                                     {% elif cat == 'danger' or cat == 'error' %}style="background:#3b0b0b; color:#ffd6d6; border:1px solid #6b0f0f;"
+                                     {% else %}style="background:#242424; color:#f3f4f6; border:1px solid #333;"{% endif %}>
+                                    {{ msg }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
+                <h2 class="overview-title">Admin Settings</h2>
+
+                <div style="background:transparent; border-radius:8px; padding:1.25rem; box-shadow:0 2px 6px rgba(0,0,0,0.12); width:100%">
+                    <form method="POST" action="{{ url_for('admin_settings') }}">
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block; color:#cbd5e1; margin-bottom:6px;">Username</label>
+                            <input name="username" value="{{ admin.username if admin else '' }}" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; background:#ffffff; color:#333;" />
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block; color:#cbd5e1; margin-bottom:6px;">Email</label>
+                            <input name="email" value="{{ admin.email if admin else '' }}" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; background:#ffffff; color:#333;" />
+                        </div>
+                        <div style="margin-bottom:1rem;">
+                            <label style="display:block; color:#cbd5e1; margin-bottom:6px;">Contact Phone Number</label>
+                            <input name="phone" value="{{ admin.phone if admin else '' }}" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; background:#ffffff; color:#333;" />
+                        </div>
+
+                        <hr style="border-color:#27272a; margin:16px 0;" />
+
+                        <h3 style="color:#000000; margin-bottom:8px;">Change password</h3>
+                        <p style="color:#cbd5e1; margin-bottom:8px; font-size:0.95rem;">Leave blank to keep current password.</p>
+
+                        <div style="margin-bottom:0.75rem;">
+                            <label style="display:block; color:#cbd5e1; margin-bottom:6px;">Current Password</label>
+                            <input type="password" name="current_password" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; background:#ffffff; color:#333;" />
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <label style="display:block; color:#cbd5e1; margin-bottom:6px;">New Password</label>
+                            <input type="password" name="new_password" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; background:#ffffff; color:#333;" />
+                        </div>
+                        <div style="margin-bottom:0.75rem;">
+                            <label style="display:block; color:#cbd5e1; margin-bottom:6px;">Confirm New Password</label>
+                            <input type="password" name="confirm_password" style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; background:#ffffff; color:#333;" />
+                        </div>
+
+                        <div style="display:flex; gap:12px; margin-top:12px;">
+                            <button type="submit" style="background:#000000; color:#ffffff; border:none; padding:10px 18px; border-radius:8px; font-weight:bold;">Save changes</button>
+                            <a href="{{ url_for('admin_dashboard') }}" style="background:transparent; color:#000000; border:1px solid #000000; padding:10px 16px; border-radius:8px; text-decoration:none; display:inline-block;">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

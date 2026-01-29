@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Cemetery Mapping System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: url("{{ url_for('static', filename='images/Picture1.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            color: #18181b;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0;
+            color: #000000 !important;
+        }
+        nav a {
+            color: #374151;
+            text-decoration: none;
+            margin-left: 1rem;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #000000;
+        }
+        nav a.active {
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .parent-section {
+            display: flex;
+            width: 100%;
+            height: 90vh;
+        }
+        .parent-section .left {
+            width: 30%;
+            height: 100%;
+            padding-right: 12.5px;
+        }
+        .parent-section .right {
+            width: 100%;
+            height: 100%;
+            padding-left: 12.5px;
+        }
+        .left, .right {
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .list-box {
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            overflow-y: auto;
+        }
+        .side-nav a {
+            padding: 0.75rem 1.5rem;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.2s, color 0.2s;
+            border: 1px solid #000000;
+            margin-bottom: 1rem;
+            background: transparent;
+        }
+        .side-nav a:hover {
+            background: #f3f4f6;
+            color: #000000;
+        }
+        .side-nav a.active {
+            background: #000000;
+            color: #18181b;
+            font-weight: bold;
+            border: 1px solid #000000;
+        }
+        .recent-reservations-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+        .recent-reservations {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .recent-reservations th, .recent-reservations td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        .recent-reservations th {
+            background: #f9fafb;
+            color: #000000;
+            font-weight: bold;
+            border-bottom: 2px solid #000000;
+        }
+        .recent-reservations td {
+            color: #18181b;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .recent-reservations tr:last-child td {
+            border-bottom: none;
+        }
+        @media (max-width: 900px) {
+            .parent-section {
+                flex-direction: column;
+                height: auto;
+            }
+            .parent-section .left,
+            .parent-section .right {
+                width: 100%;
+                padding: 10px 0;
+                height: auto;
+            }
+            .list-box {
+                padding: 1rem;
+            }
+            .recent-reservations th, .recent-reservations td {
+                padding: 0.5rem 0.5rem;
+                font-size: 0.95em;
+            }
+        }
+        .map-btn:hover {
+            background: rgba(255,255,255,0.95) !important;
+            border-color: #000000 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        }
+
+        .map-btn.active {
+            background: #000000 !important;
+            border-color: #000000 !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+        }
+
+        /* Print styling: make table readable on paper, hide interactive controls and backgrounds */
+        @media print {
+            * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { background: #fff !important; color: #000 !important; }
+            header, nav, .side-nav, .map-controls, #map-wrapper, .map-status-legend, .map-selection-buttons, .circle-btn, button, input, select, #addPlotModal, #editPlotModal { display: none !important; }
+            .parent-section { display: block !important; height: auto !important; }
+            .list-box { background: transparent !important; box-shadow: none !important; padding: 0 !important; color: #000 !important; }
+            .recent-reservations-wrapper { overflow: visible !important; }
+            .recent-reservations { width: 100% !important; background: transparent !important; box-shadow: none !important; border-collapse: collapse !important; }
+            .recent-reservations th, .recent-reservations td { color: #000 !important; background: transparent !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; border: 1px solid #000 !important; padding: 0.35rem 0.5rem !important; }
+            .recent-reservations th { background: #eee !important; color: #000 !important; font-weight: bold !important; }
+            .recent-reservations td { border-bottom: 1px solid #999 !important; }
+            /* Ensure table rows are not truncated across pages */
+            tr { page-break-inside: avoid; }
+            /* Print-only heading: hide screen title and show print title */
+            .screen-title { display: none !important; }
+            .print-title { display: block !important; color: #000 !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="container header-flex">
+        <h1 style="color: #000000;">Peace Eternal Garden</h1>
+        <nav>
+            <a href="login.html" class="active">Admin</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Main Section -->
+<section class="parent-section">
+
+    {% include 'partials/admin_sidebar.html' %}
+
+    <div class="right">
+        <div class="list-box">
+            <div style="width:100%;padding:2rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                    <h2 class="screen-title" style="color:#000000;margin:0;">Plot Management</h2>
+                    <h2 class="print-title" style="display:none;margin:0;">Plot List</h2>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <button 
+                            id="addPlotBtn"
+                            onclick="openAddPlotModal()"
+                            style="background: #000000; border: none; border-radius: 6px; padding: 0.45em 1em; display: flex; align-items: center; cursor: pointer; transition: background 0.2s;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" style="margin-right: 0.4em;">
+                                <path stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m7-7H5"/>
+                            </svg>
+                            <span style="color:#ffffff;font-weight:bold;">Add Plot</span>
+                        </button>
+                        <button onclick="exportPlots()" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.45em 1em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Export</button>
+                        <button onclick="window.print()" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.45em 1em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Print</button>
+                        <input 
+                            type="text" 
+                            id="plotSearch" 
+                            placeholder="Search plots..." 
+                            style="padding: 0.5em 1em; border-radius: 6px; border: 1px solid #000000; background: #ffffff; color: #18181b; font-size: 1rem; outline: none; min-width: 180px;"
+                            oninput="filterPlots()"
+                        />
+                        <select id="plotStatusFilter" onchange="filterPlots()" style="padding: 0.45em 0.75em; border-radius:6px; border:1px solid #000000; background:#ffffff; color:#18181b; font-size:1rem; outline:none;">
+                            <option value="">All Statuses</option>
+                            <option value="Available">Available</option>
+                            <option value="Occupied">Occupied</option>
+                            <option value="Reserved">Reserved</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="recent-reservations-wrapper">
+                    <table class="recent-reservations" id="plotTable">
+                        <thead>
+                            <tr>
+                                <th>Block #</th>
+                                <th>Row</th>
+                                <th>Plot #</th>
+                                <th>Status</th>
+                                <th>Square Meter</th>
+                                <th>Price (₱)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="plotTableBody">
+                            {% for p in plots %}
+                            <tr data-id="{{ p.id }}">
+                                <td>{{ p.block or '' }}</td>
+                                <td>{{ p.row or '' }}</td>
+                                <td>{{ p.number }}</td>
+                                <td>{{ p.status or '' }}</td>
+                                <td>{{ p.square_meter or '' }}</td>
+                                <td>{% if p.price %}₱{{ ('{:,.2f}'.format(p.price)) }}{% endif %}</td>
+                                <td>
+                                    <button class="action-btn edit-plot-btn" data-id="{{ p.id }}" data-number="{{ p.number }}" data-block="{{ p.block or '' }}" data-row="{{ p.row or '' }}" data-status="{{ p.status or '' }}" data-assigned="{{ p.assigned_to or '' }}" data-reserved="{{ p.reserved_date.isoformat() if p.reserved_date else '' }}" data-sqm="{{ p.square_meter or '' }}" data-price="{{ p.price or 0 }}" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.4em 0.8em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Edit</button>
+                                    <button class="action-btn delete-plot-btn" data-id="{{ p.id }}" data-number="{{ p.number }}" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.4em 0.8em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add Plot Modal -->
+<div id="addPlotModal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(255,255,255,0.75); justify-content:center; align-items:center;">
+    <div style="background:#ffffff; padding:2.5rem 3rem; border-radius:18px; box-shadow:0 8px 32px rgba(0,0,0,0.25); min-width:600px; max-width:1100px; width:90vw; position:relative; text-align:center;">
+        <h3 style="color:#000000;margin-bottom:1rem;">Add Plot</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 2.5rem; align-items: flex-start; justify-content: center;">
+            <form id="addPlotForm" style="margin-bottom:0; flex: 1 1 320px; min-width: 300px; max-width: 400px;">
+                <div style="text-align:left;margin-bottom:1rem;">
+                    <label for="plotBlock" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Block #</label>
+                    <input id="plotBlock" type="text" placeholder="Block #" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" required />
+                </div>
+                <div style="text-align:left;margin-bottom:1rem;">
+                    <label for="plotRow" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Row</label>
+                    <input id="plotRow" type="text" placeholder="Row" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" required />
+                </div>
+                <div style="text-align:left;margin-bottom:1rem;">
+                    <label for="plotNumber" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Plot #</label>
+                    <input id="plotNumber" type="text" placeholder="Plot #" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" required />
+                </div>
+                <div style="text-align:left;margin-bottom:1rem;">
+                    <label for="plotStatus" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Status</label>
+                    <select id="plotStatus" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;">
+                        <option value="Available">Available</option>
+                        <option value="Occupied">Occupied</option>
+                        <option value="Reserved">Reserved</option>
+                    </select>
+                </div>
+                <div style="text-align:left;margin-bottom:1rem;">
+                    <label for="plotSquareMeter" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Square Meter</label>
+                    <input id="plotSquareMeter" type="text" placeholder="e.g. 4x5" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" />
+                </div>
+                <div style="text-align:left;margin-bottom:1.5rem;">
+                    <label for="plotPrice" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Price (₱)</label>
+                    <input id="plotPrice" type="number" placeholder="Price" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" required />
+                </div>
+                <div style="display:flex;justify-content:center;gap:1rem;">
+                    <button type="submit" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.6em 2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Save</button>
+                    <button type="button" onclick="closeAddPlotModal()" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.6em 2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Close</button>
+                </div>
+            </form>
+            <div style="flex: 1 1 400px; width: 340px; max-width: 500px; height: 610px; position: relative;">
+                <!-- Map controls (reuse styles from search_plot.html) -->
+                <div class="map-controls" style="position:absolute;bottom:12px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:30;">
+                    <button class="circle-btn" id="zoom-reset" title="Reset view" style="width:40px;height:40px;border-radius:50%;border:none;background:rgba(212,212,212,0.8);cursor:pointer;">⤢</button>
+                    <button class="circle-btn" id="zoom-in" title="Zoom in" style="width:40px;height:40px;border-radius:50%;border:none;background:rgba(212,212,212,0.8);cursor:pointer;">+</button>
+                    <button class="circle-btn" id="zoom-out" title="Zoom out" style="width:40px;height:40px;border-radius:50%;border:none;background:rgba(212,212,212,0.8);cursor:pointer;">−</button>
+                </div>
+
+                <div class="map-selection-buttons" style="position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:6px;z-index:32;">
+                    <button class="map-btn active" data-map="map.svg" title="Main Cemetery Map" style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(255,255,255,0.9);border:2px solid #e5e7eb;border-radius:6px;cursor:pointer;transition:all 0.2s ease;font-size:11px;font-weight:500;color:#374151;box-shadow:0 2px 4px rgba(0,0,0,0.1);min-width:100px;">
+                        <span style="font-size:12px;">📍</span>
+                        <span>Main Map</span>
+                    </button>
+                    <button class="map-btn" data-map="apartment_1.svg" title="Apartment 1 Map" style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(255,255,255,0.9);border:2px solid #e5e7eb;border-radius:6px;cursor:pointer;transition:all 0.2s ease;font-size:11px;font-weight:500;color:#374151;box-shadow:0 2px 4px rgba(0,0,0,0.1);min-width:100px;">
+                        <span style="font-size:12px;">🏢</span>
+                        <span>Apartment 1</span>
+                    </button>
+                    <button class="map-btn" data-map="apartment_2.svg" title="Apartment 2 Map" style="display:flex;align-items:center;gap:6px;padding:8px 10px;background:rgba(255,255,255,0.9);border:2px solid #e5e7eb;border-radius:6px;cursor:pointer;transition:all 0.2s ease;font-size:11px;font-weight:500;color:#374151;box-shadow:0 2px 4px rgba(0,0,0,0.1);min-width:100px;">
+                        <span style="font-size:12px;">🏢</span>
+                        <span>Apartment 2</span>
+                    </button>
+                </div>
+
+                <div class="map-status-legend" style="position:absolute;left:12px;bottom:12px;z-index:31;background:rgba(255,255,255,0.9);padding:8px 12px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="width:14px;height:14px;border-radius:50%;background:#22c55e;display:inline-block;border:2px solid #22c55e;"></span><span style="font-size:13px;color:#111827;">Available</span></div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="width:14px;height:14px;border-radius:50%;background:#000000;display:inline-block;border:2px solid #000000;"></span><span style="font-size:13px;color:#111827;">Reserved</span></div>
+                    <div style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;border-radius:50%;background:#fff;display:inline-block;border:2px solid #bbb;"></span><span style="font-size:13px;color:#111827;">Not Available</span></div>
+                </div>
+
+                <!-- SVG map container (map-panzoom.js expects #map-svg-wrapper) -->
+                <div id="map-wrapper" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+                    <div id="map-svg-wrapper" style="width:100%;height:100%;overflow:hidden;touch-action:none;display:flex;align-items:center;justify-content:center;">
+                        <!-- SVG will be loaded here by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Plot Modal -->
+<div id="editPlotModal" style="display:none; position:fixed; z-index:1001; left:0; top:0; width:100vw; height:100vh; background:rgba(255,255,255,0.75); justify-content:center; align-items:center;">
+    <div style="background:#ffffff; padding:2rem 2.5rem; border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,0.25); min-width:400px; max-width:45vw; position:relative; text-align:center;">
+        <h3 style="color:#000000;margin-bottom:1rem;">Edit Plot</h3>
+        <form id="editPlotForm" style="margin-bottom:0;">
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editPlotBlock" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Block #</label>
+                <input id="editPlotBlock" type="text" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editPlotRow" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Row</label>
+                <input id="editPlotRow" type="text" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" required />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editPlotNumber" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Plot #</label>
+                <input id="editPlotNumber" type="text" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" readonly />
+            </div>
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editPlotStatus" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Status</label>
+                <select id="editPlotStatus" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;">
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="Reserved">Reserved</option>
+                </select>
+            </div>
+            <!-- Assigned To and Reserved Date inputs removed per request -->
+            <div style="text-align:left;margin-bottom:1rem;">
+                <label for="editPlotPrice" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Price</label>
+                <input id="editPlotPrice" type="number" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" />
+            </div>
+            <div style="text-align:left;margin-bottom:1.5rem;">
+                <label for="editPlotSquareMeter" style="display:block;margin-bottom:0.3em;color:#000000;font-weight:bold;">Square Meter</label>
+                <input id="editPlotSquareMeter" type="text" style="width:100%;padding:0.6em 1em;border-radius:6px;border:1px solid #000000;background:#ffffff;color:#18181b;font-size:1rem;" />
+            </div>
+            <div style="display:flex;justify-content:center;gap:1rem;">
+                <button type="submit" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.6em 2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Save</button>
+                <button type="button" onclick="closeEditPlotModal()" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.6em 2em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Close</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentReservation = {};
+    function openModal(name, plot) {
+        currentReservation = { name, plot };
+        document.getElementById('modalTitle').textContent = 'Reservation Action';
+        document.getElementById('modalDesc').textContent = `Reservation for ${name} (Plot #${plot})`;
+        document.getElementById('reservationModal').classList.add('active');
+    }
+    function closeModal() {
+        document.getElementById('reservationModal').classList.remove('active');
+    }
+    function confirmPayment() {
+        alert(`Payment confirmed for ${currentReservation.name} (Plot #${currentReservation.plot})`);
+        closeModal();
+    }
+    function failPayment() {
+        alert(`Payment failed for ${currentReservation.name} (Plot #${currentReservation.plot})`);
+        closeModal();
+    }
+
+    // Simple search filter for reservations
+    function filterReservations() {
+        const input = document.getElementById('reservationSearch').value.toLowerCase();
+        const table = document.getElementById('reservationTable');
+        const trs = table.querySelectorAll('tbody tr');
+        trs.forEach(tr => {
+            const text = tr.textContent.toLowerCase();
+            tr.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
+    // Simple search filter for deceased records
+    function filterDeceased() {
+        const input = document.getElementById('deceasedSearch').value.toLowerCase();
+        const table = document.getElementById('deceasedTable');
+        const trs = table.querySelectorAll('tbody tr');
+        trs.forEach(tr => {
+            const text = tr.textContent.toLowerCase();
+            tr.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
+    // Filter plots
+    function filterPlots() {
+        const input = document.getElementById('plotSearch').value.toLowerCase();
+        const statusFilterEl = document.getElementById('plotStatusFilter');
+        const statusFilter = statusFilterEl ? statusFilterEl.value.toLowerCase() : '';
+        const trs = document.querySelectorAll('#plotTable tbody tr');
+        trs.forEach(tr => {
+            const text = tr.textContent.toLowerCase();
+            // get status column (index 3) if present
+            let statusText = '';
+            if (tr.children && tr.children[3]) statusText = tr.children[3].textContent.toLowerCase();
+
+            const matchesText = input === '' || text.includes(input);
+            const matchesStatus = statusFilter === '' || statusText.includes(statusFilter);
+
+            tr.style.display = (matchesText && matchesStatus) ? '' : 'none';
+        });
+    }
+
+    // Modal open/close for Add Deceased
+    function openAddDeceasedModal() {
+        document.getElementById('addDeceasedModal').style.display = 'flex';
+    }
+    function closeAddDeceasedModal() {
+        document.getElementById('addDeceasedModal').style.display = 'none';
+    }
+
+    // Add Plot Modal logic
+    function openAddPlotModal() {
+        document.getElementById('addPlotModal').style.display = 'flex';
+    }
+    function closeAddPlotModal() {
+        document.getElementById('addPlotModal').style.display = 'none';
+    }
+
+    // Edit Deceased Modal logic
+    function openEditDeceasedModal(name, dob, dod, plot, burial, SquareMeter) {
+        document.getElementById('editDeceasedName').value = name;
+        document.getElementById('editDeceasedDob').value = dob;
+        document.getElementById('editDeceasedDod').value = dod;
+        document.getElementById('editDeceasedPlot').value = plot;
+        document.getElementById('editDeceasedBurial').value = burial;
+        document.getElementById('editDeceasedSquareMeter').value = SquareMeter;
+        document.getElementById('editDeceasedModal').style.display = 'flex';
+    }
+    function closeEditDeceasedModal() {
+        document.getElementById('editDeceasedModal').style.display = 'none';
+    }
+
+    // Edit Plot Modal logic
+    function openEditPlotModal(number, status, assigned, reserved, SquareMeter, price) {
+        document.getElementById('editPlotNumber').value = number;
+        // populate block and row if fields exist
+        const blockField = document.getElementById('editPlotBlock');
+        const rowField = document.getElementById('editPlotRow');
+        if (blockField && rowField) {
+            // If the caller passed block/row as extra args on older usages, handle gracefully
+            // We expect callers to set the fields before calling this function, but set defaults otherwise
+            blockField.value = blockField.value || '';
+            rowField.value = rowField.value || '';
+        }
+    document.getElementById('editPlotStatus').value = status;
+        document.getElementById('editPlotSquareMeter').value = SquareMeter;
+        document.getElementById('editPlotPrice').value = price;
+        document.getElementById('editPlotModal').style.display = 'flex';
+    }
+    function closeEditPlotModal() {
+        document.getElementById('editPlotModal').style.display = 'none';
+    }
+
+    // Delete Plot by id (calls backend)
+    function deletePlotById(id){
+        if(!id) return alert('Missing plot id');
+        fetch('/admin/plot/' + encodeURIComponent(id) + '/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).then(async res => {
+            const data = await res.json().catch(()=>({}));
+            if(!res.ok || !data.success){
+                const msg = data && data.error ? data.error : (data.message || 'Failed to delete plot');
+                alert('Error: ' + msg);
+                return;
+            }
+            // remove row from table
+            const row = document.querySelector('#plotTableBody tr[data-id="'+id+'"]');
+            if(row) row.remove();
+        }).catch(err => { console.error(err); alert('Unexpected error deleting plot'); });
+    }
+
+    // Release Plot (make available)
+    function releasePlot(number) {
+        const trs = document.querySelectorAll('#plotTable tbody tr');
+        trs.forEach(tr => {
+            // Plot # is column 2. New columns: 0=Block,1=Row,2=Plot#,3=Status,4=Square Meter,5=Price
+            if (tr.children[2] && tr.children[2].textContent === number) {
+                tr.children[3].textContent = 'Available';
+                // clear square meter and price
+                if (tr.children[4]) tr.children[4].textContent = '';
+                if (tr.children[5]) tr.children[5].textContent = '';
+            }
+        });
+    }
+
+    // Export Plots (CSV demo)
+    function exportPlots() {
+        let csv = 'Block,Row,Plot #,Status,SquareMeter,Price\n';
+        document.querySelectorAll('#plotTable tbody tr').forEach(tr => {
+            let row = [];
+            for (let i = 0; i < 6; i++) row.push('"' + (tr.children[i] ? tr.children[i].textContent : '') + '"');
+            csv += row.join(',') + '\n';
+        });
+        const blob = new Blob([csv], {type: 'text/csv'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'plots.csv';
+        a.click();
+    }
+
+    // Add Plot: submit to backend and update table
+    document.getElementById('addPlotForm').onsubmit = function(e) {
+        e.preventDefault();
+        const payload = {
+            plotNumber: document.getElementById('plotNumber').value,
+            plotBlock: document.getElementById('plotBlock').value,
+            plotRow: document.getElementById('plotRow').value,
+            plotStatus: document.getElementById('plotStatus').value,
+            // assigned and reserved were removed from the form; backend should handle defaults
+            plotSquareMeter: document.getElementById('plotSquareMeter').value,
+            plotPrice: document.getElementById('plotPrice').value
+        };
+
+        fetch('/admin/plot/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(async res => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.success) {
+                const msg = data && data.error ? data.error : (data.message || 'Failed to save plot');
+                alert('Error: ' + msg);
+                return;
+            }
+
+            const plot = data.plot;
+            const tbody = document.getElementById('plotTableBody');
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-id', plot.id || '');
+            tr.innerHTML = `
+                <td>${plot.block || ''}</td>
+                <td>${plot.row || ''}</td>
+                <td>${plot.number || ''}</td>
+                <td>${plot.status || ''}</td>
+                <td>${plot.square_meter || ''}</td>
+                <td>${plot.price ? '₱' + Number(plot.price).toLocaleString() : ''}</td>
+                <td>
+            <button class="action-btn edit-plot-btn" data-id="${plot.id || ''}" data-number="${plot.number}" data-block="${plot.block || ''}" data-row="${plot.row || ''}" data-status="${plot.status || ''}" data-sqm="${plot.square_meter || ''}" data-price="${plot.price || 0}" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.4em 0.8em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Edit</button>
+            <button class="action-btn delete-plot-btn" data-id="${plot.id || ''}" data-number="${plot.number}" style="background:#000000;color:#ffffff;font-weight:bold;padding:0.4em 0.8em;border:none;border-radius:6px;font-size:1rem;cursor:pointer;">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            closeAddPlotModal();
+            this.reset();
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Unexpected error saving plot');
+        });
+    };
+
+    document.getElementById('editPlotForm').onsubmit = function(e) {
+        e.preventDefault();
+        const editingId = this.dataset.editingId;
+        const number = document.getElementById('editPlotNumber').value;
+        const block = document.getElementById('editPlotBlock').value;
+        const row = document.getElementById('editPlotRow').value;
+        const status = document.getElementById('editPlotStatus').value;
+        const price = document.getElementById('editPlotPrice').value;
+        const SquareMeter = document.getElementById('editPlotSquareMeter').value;
+
+        if(!editingId){
+            // fallback to client-only update if id missing
+            const trs = document.querySelectorAll('#plotTable tbody tr');
+            trs.forEach(tr => {
+                if (tr.children[2] && tr.children[2].textContent === number) {
+                    if (tr.children[0]) tr.children[0].textContent = block;
+                    if (tr.children[1]) tr.children[1].textContent = row;
+                    if (tr.children[3]) tr.children[3].textContent = status;
+                    if (tr.children[4]) tr.children[4].textContent = SquareMeter;
+                    if (tr.children[5]) tr.children[5].textContent = price ? ('₱' + Number(price).toLocaleString()) : '';
+                }
+            });
+            closeEditPlotModal();
+            return;
+        }
+
+        const payload = { plotBlock: block, plotRow: row, plotStatus: status, plotPrice: price, plotSquareMeter: SquareMeter, plotNumber: number };
+        fetch('/admin/plot/' + encodeURIComponent(editingId) + '/edit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(async res => {
+            const data = await res.json().catch(()=>({}));
+            if(!res.ok || !data.success){
+                const msg = data && data.error ? data.error : (data.message || 'Failed to save plot');
+                alert('Error: ' + msg);
+                return;
+            }
+            const plot = data.plot;
+            // update the corresponding row
+            const rowEl = document.querySelector('#plotTableBody tr[data-id="'+editingId+'"]');
+            if(rowEl){
+                if(rowEl.children[0]) rowEl.children[0].textContent = plot.block || '';
+                if(rowEl.children[1]) rowEl.children[1].textContent = plot.row || '';
+                if(rowEl.children[2]) rowEl.children[2].textContent = plot.number || '';
+                if(rowEl.children[3]) rowEl.children[3].textContent = plot.status || '';
+                if(rowEl.children[4]) rowEl.children[4].textContent = plot.square_meter || '';
+                if(rowEl.children[5]) rowEl.children[5].textContent = plot.price ? ('₱' + Number(plot.price).toLocaleString()) : '';
+                // also update data-* attributes on buttons
+                const editBtn = rowEl.querySelector('.edit-plot-btn');
+                const delBtn = rowEl.querySelector('.delete-plot-btn');
+                if(editBtn){
+                    editBtn.dataset.block = plot.block || '';
+                    editBtn.dataset.row = plot.row || '';
+                    editBtn.dataset.status = plot.status || '';
+                    editBtn.dataset.sqm = plot.square_meter || '';
+                    editBtn.dataset.price = plot.price || '';
+                }
+                if(delBtn){
+                    delBtn.dataset.number = plot.number || '';
+                }
+            }
+            closeEditPlotModal();
+        }).catch(err => { console.error(err); alert('Unexpected error saving plot'); });
+    };
+</script>
+<script src="{{ url_for('static', filename='js/map-panzoom.js') }}"></script>
+<script>
+// Attach click handlers to SVG rects after the SVG is loaded by map-panzoom.js
+(function(){
+    function attachRectListeners(){
+        const wrapper = document.getElementById('map-svg-wrapper');
+        if(!wrapper) return;
+        const svg = wrapper.querySelector('svg');
+        if(!svg) {
+            // retry shortly if svg not yet loaded
+            setTimeout(attachRectListeners, 200);
+            return;
+        }
+
+        const rects = svg.querySelectorAll('rect');
+        rects.forEach((r, idx) => {
+            // avoid double-binding
+            if (r.__adminBound) return;
+            r.__adminBound = true;
+
+            r.addEventListener('click', (ev) => {
+                try {
+                    ev.stopPropagation(); ev.preventDefault();
+                } catch(e){}
+                const datasetPlot = r.dataset && r.dataset.plot;
+                let plotNum;
+                if (datasetPlot) {
+                    plotNum = Number(datasetPlot);
+                } else {
+                    // Determine plot number based on which map button is active
+                    const activeBtn = document.querySelector('.map-btn.active');
+                    const activeMap = activeBtn ? activeBtn.getAttribute('data-map') : 'map.svg';
+                    
+                    if (activeMap === 'apartment_1.svg') {
+                        plotNum = 284 + idx; // Apartment 1 plots: 284-333 (continuous from main map)
+                    } else if (activeMap === 'apartment_2.svg') {
+                        plotNum = 334 + idx; // Apartment 2 plots: 334-373 (continuous from apartment 1)
+                    } else {
+                        plotNum = idx + 1; // Main map plots: 1, 2, 3... up to 283
+                    }
+                }
+                
+                let block, row;
+                if (plotNum >= 334 && plotNum <= 373) {
+                    // Apartment 2: B1, B2, etc.
+                    const relativeNum = plotNum - 334 + 1;
+                    block = `B${Math.ceil(relativeNum / 8)}`;
+                    row = ((relativeNum - 1) % 8) + 1;
+                } else if (plotNum >= 284 && plotNum <= 333) {
+                    // Apartment 1: A1, A2, etc.
+                    const relativeNum = plotNum - 284 + 1;
+                    block = `A${Math.ceil(relativeNum / 10)}`;
+                    row = ((relativeNum - 1) % 10) + 1;
+                } else {
+                    // Main cemetery: numeric blocks (1-283)
+                    block = Math.ceil(plotNum / 28); // Adjusted for better distribution
+                    row = ((plotNum - 1) % 28) + 1;
+                }
+
+                const numInput = document.getElementById('plotNumber');
+                const blockInput = document.getElementById('plotBlock');
+                const rowInput = document.getElementById('plotRow');
+                if(numInput) numInput.value = plotNum;
+                if(blockInput) blockInput.value = block;
+                if(rowInput) rowInput.value = row;
+
+                // open the add plot modal so user can edit other fields
+                if(typeof openAddPlotModal === 'function') openAddPlotModal();
+            });
+        });
+    }
+
+    // try to attach after DOMContent and also in intervals while map script loads
+    document.addEventListener('DOMContentLoaded', attachRectListeners);
+    // final fallback: try attaching occasionally for up to a few seconds
+    let attempts = 0;
+    const intId = setInterval(() => { attempts++; attachRectListeners(); if(attempts>25) clearInterval(intId); }, 200);
+
+    // Map selection button handlers for admin modal
+    document.addEventListener('DOMContentLoaded', () => {
+        const mapButtons = document.querySelectorAll('.map-btn');
+        mapButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                mapButtons.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                
+                // Get the map path from data attribute
+                const mapPath = btn.getAttribute('data-map');
+                if (mapPath && window.loadMap) {
+                    window.loadMap('/static/' + mapPath);
+                }
+            });
+        });
+    });
+
+    // Listen for SVG load event to reattach rect listeners when map changes
+    window.addEventListener('svgloaded', () => {
+        setTimeout(attachRectListeners, 100); // Give a small delay for DOM to settle
+    });
+})();
+</script>
+
+<script>
+// Attach handlers for edit/delete buttons rendered from server
+document.addEventListener('DOMContentLoaded', () => {
+    // Use event delegation so dynamic rows are handled too
+    document.getElementById('plotTableBody').addEventListener('click', (e) => {
+        const btn = e.target.closest('.action-btn');
+        if(!btn) return;
+        if(btn.classList.contains('edit-plot-btn')){
+            const id = btn.dataset.id || '';
+            const number = btn.dataset.number || '';
+            const block = btn.dataset.block || '';
+            const row = btn.dataset.row || '';
+            const status = btn.dataset.status || '';
+            const sqm = btn.dataset.sqm || '';
+            const price = btn.dataset.price || '';
+            // populate edit modal fields
+            const epn = document.getElementById('editPlotNumber');
+            const eps = document.getElementById('editPlotStatus');
+            const epsqm = document.getElementById('editPlotSquareMeter');
+            const epp = document.getElementById('editPlotPrice');
+            const epb = document.getElementById('editPlotBlock');
+            const eprw = document.getElementById('editPlotRow');
+            if(epn) epn.value = number;
+            if(epb) epb.value = block;
+            if(eprw) eprw.value = row;
+            if(eps) eps.value = status;
+            if(epsqm) epsqm.value = sqm;
+            if(epp) epp.value = price;
+            // store current editing id on the form element
+            const editForm = document.getElementById('editPlotForm');
+            if(editForm) editForm.dataset.editingId = id;
+            if(typeof openEditPlotModal === 'function') openEditPlotModal(number, status, '', '', sqm, price);
+            return;
+        }
+        if(btn.classList.contains('delete-plot-btn')){
+            const id = btn.dataset.id;
+            const num = btn.dataset.number || id;
+            if(confirm('Delete plot #' + num + '?')) {
+                deletePlotById(id);
+            }
+            return;
+        }
+    });
+});
+</script>
+
+</body>
+<script>
+// Minimal plot refresh to update table status and SVG rects
+function refreshPlots(){
+    fetch('/api/plots').then(r=>r.json()).then(data=>{
+        if(!data || !data.success) return;
+        const plots = data.plots || [];
+        // update table rows by plot number
+        const trs = document.querySelectorAll('#plotTable tbody tr');
+        trs.forEach(tr=>{
+            const numCell = tr.children[2];
+            if(!numCell) return;
+            const num = numCell.textContent.trim();
+            const p = plots.find(x=>String(x.number) === String(num));
+            if(p && tr.children[3]) tr.children[3].textContent = p.status || '';
+            if(p && tr.children[4]) tr.children[4].textContent = p.square_meter || '';
+            if(p && tr.children[5]) tr.children[5].textContent = p.price ? ('₱' + Number(p.price).toLocaleString()) : '';
+        });
+
+        // update SVG rects if present (rects with data-plot attribute)
+        try{
+            const wrapper = document.getElementById('map-svg-wrapper');
+            const svg = wrapper && wrapper.querySelector('svg');
+            if(svg){
+                svg.querySelectorAll('rect[data-plot]').forEach(r=>{
+                    const plotNum = String(r.dataset.plot || '').trim();
+                    const p = plots.find(x=>String(x.number) === plotNum);
+                    if(!p) return;
+                    r.classList.remove('available','occupied','reserved');
+                    if(p.status){
+                        const s = p.status.toLowerCase();
+                        if(s.includes('avail')) r.classList.add('available');
+                        else if(s.includes('occup')) r.classList.add('occupied');
+                        else if(s.includes('reserv')) r.classList.add('reserved');
+                    }
+                });
+            }
+        }catch(e){/* non-fatal */}
+    }).catch(()=>{});
+}
+
+// expose globally for other pages/scripts
+window.refreshPlots = refreshPlots;
+</script>
+</html>

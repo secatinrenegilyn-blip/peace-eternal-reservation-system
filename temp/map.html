@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Map Layout</title>
+  <style>
+    body {
+      margin: 0;
+      background: #fff;
+    }
+    .map {
+      position: relative;
+      width: 2000px;
+      height: 1100px;
+      border: 2px solid #000;
+      margin: 0 auto;
+      font-family: Arial, sans-serif;
+    }
+
+    .label {
+      position: absolute;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .roadline, .block, .apartment, .chapel, .gate {
+      position: absolute;
+      border: 1px solid #000;
+      background: white;
+      box-sizing: border-box;
+    }
+
+    .roadline {
+      background: #f9f9f9;
+      z-index: 1;
+    }
+
+    .chapel {
+      width: 120px;
+      height: 70px;
+      left: 430px;
+      top: 230px;
+    }
+
+    .block {
+      background: #fff;
+    }
+
+    .block .label {
+      color: red;
+      font-size: 14px;
+      left: 10px;
+      top: 5px;
+    }
+
+    .gate {
+      background: #fff;
+      width: 30px;
+      height: 60px;
+    }
+
+    .apartment {
+      background: #fff;
+      width: 50px;
+      height: 600px;
+    }
+
+    /* Sample Blocks */
+    #block1 {
+      width: 420px;
+      height: 50px;
+      top: 50px;
+      left: 580px;
+      transform: rotate(8deg);
+    }
+
+    #block2a {
+      width: 250px;
+      height: 90px;
+      top: 350px;
+      left: 320px;
+      transform: rotate(-10deg);
+    }
+
+    #block2b {
+      width: 480px;
+      height: 80px;
+      top: 880px;
+      left: 740px;
+    }
+
+    #block3 {
+      width: 280px;
+      height: 100px;
+      top: 520px;
+      left: 380px;
+    }
+
+    #block4 {
+      width: 360px;
+      height: 110px;
+      top: 200px;
+      left: 1080px;
+      border-radius: 70px;
+    }
+
+    #block5 {
+      width: 370px;
+      height: 100px;
+      top: 340px;
+      left: 1080px;
+    }
+
+    #block6 {
+      width: 380px;
+      height: 100px;
+      top: 500px;
+      left: 1080px;
+    }
+
+    .road-1 {
+      width: 2000px;
+      height: 30px;
+      top: 120px;
+      left: 0;
+    }
+
+    .road-2 {
+      width: 100px;
+      height: 500px;
+      top: 250px;
+      left: 1300px;
+    }
+
+    .chapel-label {
+      left: 450px;
+      top: 255px;
+    }
+
+    #gate1 {
+      top: 250px;
+      left: 120px;
+    }
+
+    #gate2 {
+      top: 100px;
+      left: 100px;
+    }
+
+    #apartment1 {
+      top: 150px;
+      left: 1480px;
+    }
+
+    #apartment2 {
+      width: 300px;
+      height: 50px;
+      top: 980px;
+      left: 960px;
+    }
+  </style>
+</head>
+<body>
+  <div class="map">
+    <div class="chapel"><div class="label chapel-label">Chappel</div></div>
+    <div class="gate" id="gate1"><div class="label" style="left: 40px; top: 15px;">GATE 1</div></div>
+    <div class="gate" id="gate2"><div class="label" style="left: 40px; top: 15px;">GATE 2</div></div>
+
+    <div class="roadline road-1"></div>
+    <div class="roadline road-2"></div>
+
+    <div class="apartment" id="apartment1"><div class="label" style="left: 60px; top: 250px; transform: rotate(-90deg);">Apartment</div></div>
+    <div class="apartment" id="apartment2"><div class="label" style="left: 100px; top: 10px;">Apartment</div></div>
+
+    <div class="block" id="block1"><div class="label">BLOCK 1</div></div>
+    <div class="block" id="block2a"><div class="label">BLOCK 2</div></div>
+    <div class="block" id="block2b"><div class="label">BLOCK 2</div></div>
+    <div class="block" id="block3"><div class="label">BLOCK 3</div></div>
+    <div class="block" id="block4"><div class="label">BLOCK 4</div></div>
+    <div class="block" id="block5"><div class="label">BLOCK 5</div></div>
+    <div class="block" id="block6"><div class="label">BLOCK 6</div></div>
+  </div>
+</body>
+</html>

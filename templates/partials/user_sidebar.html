@@ -1,0 +1,200 @@
+<style>
+  .parent-section .left {
+    width: 30%;
+    height: 100%;
+    padding-right: 12.5px;
+  }
+  .left {
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .list-box {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+  .side-nav {
+    align-items: stretch;
+  }
+  .side-nav a {
+    padding: 0.75rem 1.5rem;
+    color: #23232a;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.2s, color 0.2s;
+    border: 1px solid #000000;
+    margin-bottom: 1rem;
+    background: transparent;
+  }
+  .side-nav a:hover {
+    background: #f3f4f6;
+    color: #000000;
+  }
+  /* make logout hover clearly red */
+  .side-nav a#logoutBtn:hover {
+    background: #000000;
+    color: #fff;
+    border-color: #000000;
+  }
+  .side-nav a.active {
+    background: #000000;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #000000;
+  }
+  /* Modal Styles - User Theme */
+  #logoutModal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.08); /* subtle green overlay */
+    justify-content: center;
+    align-items: center;
+  }
+  #logoutModal .modal-content {
+    background: #fff;
+    color: #23232a;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.10);
+    min-width: 320px;
+    text-align: center;
+    animation: modalPop 0.25s cubic-bezier(.4,2,.6,1) both;
+    border: 2px solid #000000;
+  }
+  #logoutModal .modal-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  #confirmLogout {
+    background: #000000;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
+    transition: background 0.2s;
+  }
+
+  #cancelLogout {
+    background: #000000;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
+    transition: background 0.2s;
+  }
+
+  #confirmLogout:hover {
+    background: #000000;
+  }
+  #cancelLogout:hover {
+    background: #000000;
+  }
+  @keyframes modalPop {
+    0% {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Responsive: make sidebar fill width on small screens without changing desktop */
+  @media (max-width: 768px) {
+    .parent-section .left {
+      width: 100% !important;
+      padding-right: 0 !important;
+    }
+    .left {
+      width: 100% !important;
+      padding: 12px !important;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+    .list-box {
+      width: 100%;
+      border-radius: 12px 12px 0 0 !important;
+      box-shadow: none !important;
+    }
+    .side-nav a {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+</style>
+
+{% set current_page = request.endpoint %}
+<div class="left">
+  <div class="list-box side-nav">
+    <a
+      href="{{ url_for('user_profile') }}"
+      class="{% if current_page == 'user_profile' %}active{% endif %}"
+    >
+      My Profile
+    </a>
+    <a
+      href="{{ url_for('user_reservations') }}"
+      class="{% if current_page == 'user_reservations' %}active{% endif %}"
+    >
+      My Reservations
+    </a>
+    <a
+      href="{{ url_for('user_owned_plots') }}"
+      class="{% if current_page == 'user_owned_plots' %}active{% endif %}"
+    >
+      Owned Plots
+    </a>
+    <a href="#" id="logoutBtn">Logout</a>
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal">
+      <div class="modal-content">
+        <h3 style="color:#000000; margin-bottom:1rem;">Logout Confirmation</h3>
+        <p style="margin-bottom:1.5rem;">Are you sure you want to logout?</p>
+        <div class="modal-actions">
+          <button id="confirmLogout">Logout</button>
+          <button id="cancelLogout">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("logoutBtn").addEventListener("click", function (e) {
+    e.preventDefault();
+    document.getElementById("logoutModal").style.display = "flex";
+  });
+  document
+    .getElementById("cancelLogout")
+    .addEventListener("click", function () {
+      document.getElementById("logoutModal").style.display = "none";
+    });
+  document
+    .getElementById("confirmLogout")
+    .addEventListener("click", function () {
+      window.location.href = "{{ url_for('user_logout') }}";
+    });
+</script>
